@@ -32,7 +32,7 @@ using Farm.Api.Middleware;
 using Farm.Business.Jobs;
 using Farm.Domain.FarmDbContexts;
 using Hangfire;
-using Hangfire.SqlServer;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Localization;
@@ -151,18 +151,12 @@ void ConfigureServices(ConfigurationManager configuration, IWebHostEnvironment e
             });
     }
 
-    if (configuration.GetConnectionString("farmDb") == null)
-    {
-        var adminDbConnString = Environment.GetEnvironmentVariable("ConnectionStrings__farmDb");
+    var farmDbConn = configuration.GetConnectionString("farmDb")
+                     ?? Environment.GetEnvironmentVariable("ConnectionStrings__farmDb");
 
-        builder.Services.AddDbContext<FarmDbContext>(options =>
-            options.UseSqlServer(adminDbConnString, sqlServerOption => sqlServerOption.CommandTimeout(configuration.GetValue<int>("CommandTimeout"))));
-    }
-    else
-    {
-        builder.Services.AddDbContext<FarmDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("farmDb"), sqlServerOption => sqlServerOption.CommandTimeout(configuration.GetValue<int>("CommandTimeout"))));
-    }
+    builder.Services.AddDbContext<FarmDbContext>(options =>
+        options.UseNpgsql(farmDbConn, npgsqlOption =>
+            npgsqlOption.CommandTimeout(configuration.GetValue<int>("CommandTimeout"))));
 
     builder.Services.AddBaseSettings(configuration);
     builder.Services.AddRepositories();
@@ -181,14 +175,14 @@ void ConfigureServices(ConfigurationManager configuration, IWebHostEnvironment e
         cfg.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
            .UseSimpleAssemblyNameTypeSerializer()
            .UseRecommendedSerializerSettings()
-           .UseSqlServerStorage(hangfireConn, new SqlServerStorageOptions
-           {
-               PrepareSchemaIfNecessary = true,
-               SchemaName = "Hangfire",
-               QueuePollInterval = TimeSpan.FromSeconds(15),
-               UseRecommendedIsolationLevel = true,
-               DisableGlobalLocks = true
-           });
+           .UsePostgreSqlStorage(opt => opt.UseNpgsqlConnection(hangfireConn),
+               new PostgreSqlStorageOptions
+               {
+                   SchemaName = "hangfire",
+                   PrepareSchemaIfNecessary = true,
+                   QueuePollInterval = TimeSpan.FromSeconds(15),
+                   InvisibilityTimeout = TimeSpan.FromMinutes(30)
+               });
     });
     builder.Services.AddHangfireServer();
 }

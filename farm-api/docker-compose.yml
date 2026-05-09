@@ -1,28 +1,46 @@
 version: '3.8'
 
+# Standalone compose for farm-api dev (use the root docker-compose.yml for full stack)
 services:
-  farmapi:
+  farm-api:
     build:
       context: .
       dockerfile: Dockerfile
     image: farm_api
     container_name: farm_api_container
-    ports:
-      - "8080:8080" 
+    depends_on:
+      postgres:
+        condition: service_healthy
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-    networks:
-      - api_network
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=dockerABC@123
+      - ConnectionStrings__farmDb=Host=postgres;Port=5432;Database=farm_db;Username=postgres;Password=dockerABC@123
     ports:
-      - "1433:1433"
+      - "8080:8080"
     networks:
       - api_network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: farm_api_postgres
+    environment:
+      - POSTGRES_DB=farm_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=dockerABC@123
+    ports:
+      - "5432:5432"
+    volumes:
+      - farm_pg_data:/var/lib/postgresql/data
+    networks:
+      - api_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d farm_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
 networks:
   api_network:
     driver: bridge
+
+volumes:
+  farm_pg_data:
