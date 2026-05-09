@@ -1,0 +1,23 @@
+<div class="farm-dialog">
+  <h3 class="title">{{title}}</h3>
+  <button type="button" class="dialog-close" (click)="onCloseDialog()" *ngIf="!isConfirmDialog">
+    <mat-icon svgIcon="close"></mat-icon>
+  </button>
+  <mat-dialog-content>
+    <div *ngIf="dependenciesFailed">
+      <span class="left">{{message}}</span>
+      <p></p>
+      <br />
+      <span class="left">Process cannot be completed.</span>
+      <br />
+      <span class="left">Please review the set up in Admin Portal.</span>
+    </div>
+    <p *ngIf="!dependenciesFailed" class="message">{{message}}</p>
+    <div [innerHTML]="htmlContent"></div>
+  </mat-dialog-content>
+  <mat-dialog-actions class="justify-items-end button-row">
+    <button mat-button mat-raised-button color="primary" (click)="onPrimaryButton()">{{primaryButtons}}</button>
+    <button *ngIf="secondaryButtons!=null" mat-button mat-raised-button color="secondary"
+      (click)="onSecondaryButton()">{{secondaryButtons}}</button>
+  </mat-dialog-actions>
+</div>

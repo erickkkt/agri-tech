@@ -1,0 +1,27 @@
+<div class="investment-list" style="padding: 16px;">
+  <h2>Đầu tư vào vật nuôi (Chăn nuôi 4.0)</h2>
+  <p style="color: #666;">
+    Mỗi vật nuôi được chia thành nhiều "share". Mua share để đồng sở hữu vật nuôi cùng trang trại,
+    theo dõi qua nhật ký + camera, và nhận chia lợi nhuận khi khai thác.
+  </p>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px;">
+    <div *ngFor="let o of offers" style="border: 1px solid #ddd; border-radius: 6px; padding: 16px;">
+      <h3 style="margin: 0 0 8px 0;">{{ o.title }}</h3>
+      <div style="font-size: 0.85rem; color: #666;">{{ o.description }}</div>
+      <div style="margin: 8px 0; padding: 8px; background: #f5f9ff; border-radius: 4px;">
+        <div>Giá / share: <strong>{{ o.pricePerShare | number }}đ</strong></div>
+        <div>Còn lại: <strong>{{ o.availableShares }} / {{ o.totalShares }}</strong> share</div>
+        <div>Tỉ lệ chia LN: <strong>{{ (o.profitRatio * 100) | number:'1.0-2' }}%</strong></div>
+        <div *ngIf="o.expectedHarvestDate">
+          Dự kiến khai thác: {{ o.expectedHarvestDate | date:'yyyy-MM-dd' }}
+        </div>
+      </div>
+      <button (click)="invest(o)" [disabled]="o.availableShares === 0">Đầu tư</button>
+    </div>
+  </div>
+
+  <div *ngIf="offers.length === 0" style="padding: 36px; text-align: center; color: #888;">
+    Hiện không có offer nào đang mở.
+  </div>
+</div>

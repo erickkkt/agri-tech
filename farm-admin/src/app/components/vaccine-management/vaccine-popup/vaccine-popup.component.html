@@ -1,0 +1,41 @@
+<h2 mat-dialog-title>{{ updateMode ? 'Cập nhật Vaccine' : 'Thêm Vaccine' }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" style="display: flex; flex-direction: column; gap: 8px; min-width: 460px;">
+    <mat-form-field appearance="outline">
+      <mat-label>Tên vaccine *</mat-label>
+      <input matInput formControlName="name" maxlength="250">
+      <mat-error *ngIf="form.get('name')?.hasError('required')">Bắt buộc</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Nhà sản xuất</mat-label>
+      <input matInput formControlName="manufacturer" maxlength="250">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Áp dụng cho loài</mat-label>
+      <mat-select formControlName="recommendedSpecies">
+        <mat-option [value]="null">Tất cả loài</mat-option>
+        <mat-option [value]="Species.Deer">Hươu</mat-option>
+        <mat-option [value]="Species.Sheep">Cừu</mat-option>
+        <mat-option [value]="Species.Cow">Bò</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Chu kỳ nhắc lại (ngày) *</mat-label>
+      <input matInput type="number" formControlName="intervalDays" min="0" max="3650">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Mô tả</mat-label>
+      <textarea matInput formControlName="description" rows="3" maxlength="2000"></textarea>
+    </mat-form-field>
+
+    <mat-slide-toggle formControlName="isActive">Đang hoạt động</mat-slide-toggle>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Hủy</button>
+  <button mat-flat-button color="primary" (click)="onSave()" [disabled]="form.invalid">Lưu</button>
+</mat-dialog-actions>

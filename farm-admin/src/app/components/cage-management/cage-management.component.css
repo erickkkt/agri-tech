@@ -1,0 +1,32 @@
+
+.mat-column-actions {
+    text-align: center;
+    width: 50px;
+    padding: 0px !important;
+}
+
+.mat-column-isActive {
+    text-align: center;
+    width: 50px;
+    padding: 0px !important;
+}
+
+.mat-mdc-table {
+    max-height: 500px;
+    overflow: auto;
+}
+
+.btn-create {
+    background-color: #5588ec;
+    color: white;
+    margin: 10px 0;
+}
+
+.mat-icon {
+    display: inline-block;
+    vertical-align: top;
+    font-size: 1.125rem;
+    width: 24px;
+    height: 24px;
+    margin-right: 0px;
+}

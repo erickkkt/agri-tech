@@ -1,0 +1,38 @@
+
+@media screen and (max-width: 420px) {
+  .mat-mdc-dialog-container {
+    max-width: 90vw !important;
+  }
+}
+
+.farm-dialog {
+  position: relative;
+  /* padding: 20px; */
+}
+
+.farm-dialog .dialog-close {
+  background: none !important;
+  border: none;
+  position: absolute;
+}
+
+.farm-dialog .title {
+  margin-top: 10px;
+  margin-left: 24px;
+}
+
+.farm-dialog .mat-mdc-dialog-content .message {
+  font-size: 1em;
+  margin-left: 24px;
+}
+
+.farm-dialog .mat-mdc-dialog-actions {
+  padding: 10px;
+  text-align: right;
+  display: block;
+}
+
+.farm-dialog .mat-mdc-dialog-content .left {
+  text-align: left;
+  font-size: 1em;
+}

@@ -1,0 +1,73 @@
+version: '3.8'
+
+# ===================================================================
+# Agri-Tech monorepo - full stack orchestration
+# Usage: docker compose up --build
+# ===================================================================
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: agri-tech-sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=dockerABC@123
+      - MSSQL_PID=Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - agri-tech-net
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P dockerABC@123 -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  farm-api:
+    build:
+      context: ./farm-api
+      dockerfile: Dockerfile
+    container_name: agri-tech-api
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__farmDb=Server=sqlserver,1433;Database=farm-db;User=sa;Password=dockerABC@123;TrustServerCertificate=True
+    ports:
+      - "8080:8080"
+    networks:
+      - agri-tech-net
+
+  farm-admin:
+    build:
+      context: ./farm-admin
+      dockerfile: Dockerfile
+    container_name: agri-tech-admin
+    depends_on:
+      - farm-api
+    ports:
+      - "4200:4200"
+    networks:
+      - agri-tech-net
+
+  farm-user:
+    build:
+      context: ./farm-user
+      dockerfile: Dockerfile
+    container_name: agri-tech-user
+    depends_on:
+      - farm-api
+    ports:
+      - "4300:4300"
+    networks:
+      - agri-tech-net
+
+networks:
+  agri-tech-net:
+    driver: bridge
+
+volumes:
+  sqlserver_data:

@@ -1,0 +1,19 @@
+<mat-toolbar class="mat-elevation-z6 toolbar" color="primary">
+  <button mat-button disableRipple="true" (click)="onMenuButtonClick()" data-test="hamburger-menu">
+    <mat-icon svgIcon="menu"></mat-icon>
+  </button>
+
+  <a [routerLink]="['/app']" data-test="home-icon" class="logo-link">
+    <img class="align-self-center" src="../../../../assets/img/home_logo_white.png" height="40" />
+  </a>
+  <span>Farm Management</span>
+
+  <div class="search-header" *ngIf="displaySearch">
+  </div>
+  <span class="welcome-message">{{userName}}</span>
+  <mat-nav-list class="horizontal">
+    <a matTooltip="View User details and Logout">
+      <mat-icon class="align-self-center" svgIcon="account-circle"></mat-icon>
+    </a>
+  </mat-nav-list>
+</mat-toolbar>

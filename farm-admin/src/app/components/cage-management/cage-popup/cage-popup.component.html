@@ -1,0 +1,69 @@
+<div class="cage-popup">
+    <h3 class="title">{{updateMode?'Edit Cage':'Create Cage'}}</h3>
+    <mat-dialog-content class="mat-dialog-content">
+        <form [formGroup]="form">
+            <section class="display-flex flex-direction-row">
+                <mat-form-field>
+                    <mat-label>Name</mat-label>
+                    <input required matInput data-test="name" placeholder="Name" formControlName="name" maxlength="250">
+                    <mat-error *ngIf="name.invalid">Name is required</mat-error>
+                </mat-form-field>
+            </section>
+
+            <section class="display-flex flex-direction-row">
+                <mat-form-field>
+                    <mat-select data-test="farm" required placeholder="Farm" formControlName="farmId">
+                        <mat-option *ngFor="let farm of farms" [value]="farm.id">
+                            {{farm.name}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="farmId.invalid">Farm is required</mat-error>
+                </mat-form-field>
+            </section>
+
+            <section class="display-flex flex-direction-row">
+                <mat-form-field>
+                    <mat-label>Capacity</mat-label>
+                    <input required matInput type="number" data-test="capacity" placeholder="Capacity"
+                        formControlName="capacity" min="1">
+                    <mat-error *ngIf="capacity.invalid">Capacity is required and must be greater than 0</mat-error>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Current Animal Count</mat-label>
+                    <input matInput type="number" data-test="current-animal-count" placeholder="Current Animal Count"
+                        formControlName="currentAnimalCount" min="0">
+                    <mat-error *ngIf="currentAnimalCount.invalid">Current Animal Count must be 0 or greater</mat-error>
+                </mat-form-field>
+            </section>           
+
+            <section class="display-flex flex-direction-row">
+                <mat-form-field>
+                    <mat-label>Description</mat-label>
+                    <textarea matInput data-test="description" placeholder="Description" formControlName="description"
+                        maxlength="500"></textarea>
+                </mat-form-field>
+            </section>
+
+
+            <section class="display-flex flex-direction-row">
+                <mat-form-field>
+                    <mat-label>Select status from dropdown</mat-label>
+                    <mat-select data-test="status" placeholder="Select status from dropdown" formControlName="status"
+                        required>
+                        <mat-option *ngFor="let status of Status.values()" [value]="status">
+                            {{status}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="status.invalid">Status is required</mat-error>
+                </mat-form-field>
+            </section>
+
+        </form>
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="justify-items-end button-row">
+        <button mat-button mat-raised-button color="primary" [disabled]="!form.valid || form.pristine"
+            (click)="onSave()">{{updateMode?'Update':'Save'}}</button>
+        <button mat-button mat-raised-button color="secondary" (click)="onCloseDialog(false)">Cancel</button>
+    </mat-dialog-actions>
+</div>

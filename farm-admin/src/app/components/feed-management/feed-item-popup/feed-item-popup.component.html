@@ -1,0 +1,34 @@
+<h2 mat-dialog-title>{{ updateMode ? 'Cập nhật thức ăn' : 'Thêm thức ăn' }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" style="display: flex; flex-direction: column; gap: 8px; min-width: 460px;">
+    <mat-form-field appearance="outline">
+      <mat-label>Mã *</mat-label>
+      <input matInput formControlName="code" maxlength="50">
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Tên *</mat-label>
+      <input matInput formControlName="name" maxlength="250">
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Đơn vị *</mat-label>
+      <input matInput formControlName="unit" maxlength="50">
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Nhà sản xuất</mat-label>
+      <input matInput formControlName="manufacturer" maxlength="250">
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Thông tin dinh dưỡng</mat-label>
+      <textarea matInput formControlName="nutritionInfo" rows="3" maxlength="2000"></textarea>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Ngưỡng tồn kho thấp *</mat-label>
+      <input matInput type="number" formControlName="lowStockThreshold" min="0">
+    </mat-form-field>
+    <mat-slide-toggle formControlName="isActive">Đang hoạt động</mat-slide-toggle>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Hủy</button>
+  <button mat-flat-button color="primary" (click)="onSave()" [disabled]="form.invalid">Lưu</button>
+</mat-dialog-actions>

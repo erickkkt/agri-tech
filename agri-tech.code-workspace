@@ -1,0 +1,37 @@
+{
+  "folders": [
+    { "name": "🌐 monorepo root", "path": "." },
+    { "name": "⚙️ farm-api (backend)", "path": "farm-api" },
+    { "name": "🛠 farm-admin (admin UI)", "path": "farm-admin" },
+    { "name": "👥 farm-user (end-user UI)", "path": "farm-user" },
+    { "name": "📚 docs", "path": "docs" }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/.git": true,
+      "**/node_modules": true,
+      "**/bin": true,
+      "**/obj": true,
+      "**/.angular": true,
+      "**/dist": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/bin": true,
+      "**/obj": true,
+      "**/dist": true,
+      "**/.angular": true,
+      "**/package-lock.json": true
+    },
+    "typescript.tsdk": "farm-admin/node_modules/typescript/lib"
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-dotnettools.csharp",
+      "ms-dotnettools.csdevkit",
+      "angular.ng-template",
+      "ms-azuretools.vscode-docker",
+      "esbenp.prettier-vscode"
+    ]
+  }
+}

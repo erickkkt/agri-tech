@@ -1,0 +1,59 @@
+
+mat-sidenav {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 250px;
+}
+
+mat-nav-list {
+  a.padded-internally {
+    & > div {
+      padding: 0 2rem !important;
+    }
+  }
+}
+
+mat-sidenav-container {
+  height: 100%;
+}
+
+mat-sidenav-content {
+  position: absolute !important;
+  width: 100%;
+}
+
+
+.mat-sidenav-container {
+  background-color: white !important;
+  // height: 100vh;
+
+  .mat-sidenav-content {
+    display: flex;
+    flex-direction: column;
+  }
+}
+.sidenav-toolbar {
+  height: 64px;
+  background-color: rgba(0,0,0,.04);
+  display: flex;
+  flex-direction: row;
+
+  @media (max-width: 600px) {
+    height: 56px;
+  }
+}
+.mat-nav-list {
+  padding-top: 0;
+}
+
+.menu-list-item.mat-list-item {
+  .mat-list-item-content {
+    flex: 1 1 100%;
+  }
+}
+.version-info {
+  font-size: 8pt;
+  padding: 8px;
+  align-self: flex-end;
+}

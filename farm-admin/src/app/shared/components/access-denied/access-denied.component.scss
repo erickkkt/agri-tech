@@ -1,0 +1,16 @@
+.lei-dialog {
+    position: relative;   
+    margin-top: 20%;
+}
+
+.lei-dialog .mat-mdc-dialog-content .message{
+    font-size: 1em;
+    text-align:center;
+}
+
+.lei-dialog .mat-mdc-dialog-content .title{
+    font-size: 1.5em;
+    text-align: center;
+    font-weight: bold;
+}
+

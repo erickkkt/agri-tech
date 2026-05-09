@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  farmapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: farm_api
+    container_name: farm_api_container
+    ports:
+      - "8080:8080" 
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - api_network
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=dockerABC@123
+    ports:
+      - "1433:1433"
+    networks:
+      - api_network
+
+networks:
+  api_network:
+    driver: bridge

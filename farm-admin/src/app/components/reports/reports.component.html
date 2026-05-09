@@ -1,0 +1,111 @@
+<div class="page-reports" style="padding: 16px;">
+  <div style="display: flex; align-items: center; gap: 12px;">
+    <h2 style="flex: 1;">Báo cáo tổng hợp</h2>
+    <button mat-stroked-button (click)="refresh()">Làm mới</button>
+  </div>
+
+  <div *ngIf="loading" style="padding: 24px; text-align: center;">Đang tải...</div>
+
+  <div *ngIf="dashboard && !loading">
+    <!-- KPI cards -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px;">
+      <mat-card>
+        <mat-card-content>
+          <div style="font-size: 0.85rem; color: #666;">Trang trại</div>
+          <div style="font-size: 1.8rem; font-weight: 600;">{{ dashboard.totalFarms }}</div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card>
+        <mat-card-content>
+          <div style="font-size: 0.85rem; color: #666;">Chuồng</div>
+          <div style="font-size: 1.8rem; font-weight: 600;">{{ dashboard.totalCages }}</div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card>
+        <mat-card-content>
+          <div style="font-size: 0.85rem; color: #666;">Vật nuôi</div>
+          <div style="font-size: 1.8rem; font-weight: 600;">{{ dashboard.totalAnimals }}</div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card>
+        <mat-card-content>
+          <div style="font-size: 0.85rem; color: #666;">Khỏe mạnh / Bệnh</div>
+          <div style="font-size: 1.4rem;">
+            <span style="color: #060;">{{ dashboard.healthyAnimals }}</span> /
+            <span style="color: #d33;">{{ dashboard.sickAnimals }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card>
+        <mat-card-content>
+          <div style="font-size: 0.85rem; color: #666;">Vaccine sắp đến hạn</div>
+          <div style="font-size: 1.8rem; font-weight: 600;">{{ dashboard.vaccineSchedulesUpcoming }}</div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card>
+        <mat-card-content>
+          <div style="font-size: 0.85rem; color: #666;">Vaccine quá hạn</div>
+          <div style="font-size: 1.8rem; font-weight: 600; color: #d33;">{{ dashboard.vaccineSchedulesOverdue }}</div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card>
+        <mat-card-content>
+          <div style="font-size: 0.85rem; color: #666;">Thức ăn tồn thấp</div>
+          <div style="font-size: 1.8rem; font-weight: 600; color: #e80;">{{ dashboard.feedItemsLowStock }}</div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card>
+        <mat-card-content>
+          <div style="font-size: 0.85rem; color: #666;">Cảnh báo chưa đọc</div>
+          <div style="font-size: 1.8rem; font-weight: 600;">
+            {{ dashboard.unreadAlerts }}
+            <span style="font-size: 0.8rem; color: #d33;" *ngIf="dashboard.criticalAlerts > 0">
+              ({{ dashboard.criticalAlerts }} nghiêm trọng)
+            </span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Distributions -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <mat-card>
+        <mat-card-header><mat-card-title>Vật nuôi theo loài</mat-card-title></mat-card-header>
+        <mat-card-content>
+          <div *ngFor="let s of dashboard.animalsBySpecies" style="display: flex; padding: 4px 0;">
+            <span style="flex: 1;">{{ s.species }}</span>
+            <strong>{{ s.count }}</strong>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card>
+        <mat-card-header><mat-card-title>Tình trạng sức khỏe</mat-card-title></mat-card-header>
+        <mat-card-content>
+          <div *ngFor="let h of dashboard.animalsByHealth" style="display: flex; padding: 4px 0;">
+            <span style="flex: 1;">{{ h.healthStatus }}</span>
+            <strong>{{ h.count }}</strong>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Trend -->
+    <mat-card style="margin-top: 16px;">
+      <mat-card-header><mat-card-title>Cân nặng trung bình theo tháng (6 tháng gần nhất)</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <th style="text-align: left; padding: 6px;">Tháng</th>
+            <th style="text-align: right; padding: 6px;">Cân nặng TB (kg)</th>
+            <th style="text-align: right; padding: 6px;">Số lần ghi nhận</th>
+          </tr>
+          <tr *ngFor="let m of dashboard.averageGrowthByMonth">
+            <td style="padding: 4px 6px;">{{ monthLabel(m.year, m.month) }}</td>
+            <td style="padding: 4px 6px; text-align: right;">{{ m.averageWeight | number:'1.2-2' }}</td>
+            <td style="padding: 4px 6px; text-align: right;">{{ m.logsCount }}</td>
+          </tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

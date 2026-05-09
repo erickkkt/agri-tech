@@ -1,0 +1,45 @@
+<h2 mat-dialog-title>Ghi nhận bệnh</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" style="display: flex; flex-direction: column; gap: 8px; min-width: 460px;">
+    <mat-form-field appearance="outline">
+      <mat-label>Tên bệnh *</mat-label>
+      <input matInput formControlName="diseaseName" maxlength="250">
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Ngày chẩn đoán *</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="diagnosedAt">
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Người chẩn đoán</mat-label>
+      <input matInput formControlName="diagnosedBy" maxlength="250">
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Mức độ *</mat-label>
+      <mat-select formControlName="severity">
+        <mat-option [value]="DiseaseSeverity.Mild">Nhẹ</mat-option>
+        <mat-option [value]="DiseaseSeverity.Moderate">Vừa</mat-option>
+        <mat-option [value]="DiseaseSeverity.Severe">Nặng</mat-option>
+        <mat-option [value]="DiseaseSeverity.Critical">Nguy kịch</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Trạng thái *</mat-label>
+      <mat-select formControlName="status">
+        <mat-option [value]="DiseaseStatus.Active">Đang bệnh</mat-option>
+        <mat-option [value]="DiseaseStatus.UnderTreatment">Đang điều trị</mat-option>
+        <mat-option [value]="DiseaseStatus.Recovered">Đã khỏi</mat-option>
+        <mat-option [value]="DiseaseStatus.Fatal">Tử vong</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Ghi chú</mat-label>
+      <textarea matInput formControlName="notes" rows="3" maxlength="2000"></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Hủy</button>
+  <button mat-flat-button color="primary" (click)="onSave()" [disabled]="form.invalid">Lưu</button>
+</mat-dialog-actions>

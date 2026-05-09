@@ -1,0 +1,51 @@
+<h2 mat-dialog-title>Giao dịch kho</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" style="display: flex; flex-direction: column; gap: 8px; min-width: 460px;">
+    <mat-form-field appearance="outline">
+      <mat-label>Trang trại *</mat-label>
+      <mat-select formControlName="farmId">
+        <mat-option *ngFor="let f of farms" [value]="f.id">{{ f.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Thức ăn *</mat-label>
+      <mat-select formControlName="feedItemId">
+        <mat-option *ngFor="let i of items" [value]="i.id">{{ i.code }} - {{ i.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Loại *</mat-label>
+      <mat-select formControlName="type">
+        <mat-option *ngFor="let t of txTypes" [value]="t.value">{{ t.label }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Số lượng *</mat-label>
+      <input matInput type="number" formControlName="quantity" min="0.0001">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Đơn giá</mat-label>
+      <input matInput type="number" formControlName="unitPrice" min="0">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Ngày giao dịch *</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="transactionDate">
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Ghi chú</mat-label>
+      <textarea matInput formControlName="notes" rows="2" maxlength="2000"></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Hủy</button>
+  <button mat-flat-button color="primary" (click)="onSave()" [disabled]="form.invalid">Lưu</button>
+</mat-dialog-actions>

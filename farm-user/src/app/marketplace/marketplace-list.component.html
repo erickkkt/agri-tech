@@ -1,0 +1,31 @@
+<div class="marketplace-list" style="padding: 16px;">
+  <h2>Sàn giao dịch vật nuôi</h2>
+
+  <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
+    <input type="text" placeholder="Từ khóa..." [(ngModel)]="query.q" />
+    <input type="text" placeholder="Tỉnh / Thành" [(ngModel)]="query.province" />
+    <select [(ngModel)]="query.species">
+      <option [ngValue]="undefined">Tất cả loài</option>
+      <option [ngValue]="0">Hươu</option>
+      <option [ngValue]="1">Cừu</option>
+      <option [ngValue]="2">Bò</option>
+    </select>
+    <button (click)="resetAndSearch()">Tìm</button>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px;">
+    <div *ngFor="let l of listings" style="border: 1px solid #ddd; border-radius: 6px; overflow: hidden;">
+      <img *ngIf="l.photoUrls?.length" [src]="l.photoUrls[0]" alt="" style="width: 100%; height: 160px; object-fit: cover;" />
+      <div style="padding: 12px;">
+        <h3 style="margin: 0 0 4px 0;">{{ l.title }}</h3>
+        <div style="color: #666; font-size: 0.85rem;">{{ l.farmName }} - {{ l.province }}</div>
+        <div style="margin-top: 8px; font-weight: 600;">{{ l.price | number }} {{ l.currency }} / {{ l.unit }}</div>
+        <div style="font-size: 0.85rem;">Số lượng: {{ l.quantity }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="listings.length === 0" style="padding: 36px; text-align: center; color: #888;">
+    Không có tin đăng nào phù hợp.
+  </div>
+</div>

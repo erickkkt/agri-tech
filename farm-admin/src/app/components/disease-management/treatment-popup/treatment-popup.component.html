@@ -1,0 +1,52 @@
+<h2 mat-dialog-title>Ghi nhận đợt điều trị</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" style="display: flex; flex-direction: column; gap: 8px; min-width: 460px;">
+    <mat-form-field appearance="outline">
+      <mat-label>Liên quan bệnh (tùy chọn)</mat-label>
+      <mat-select formControlName="diseaseRecordId">
+        <mat-option [value]="null">Không</mat-option>
+        <mat-option *ngFor="let d of diseases" [value]="d.id">
+          {{ d.diseaseName }} ({{ d.diagnosedAt | date:'yyyy-MM-dd' }})
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Thuốc *</mat-label>
+      <input matInput formControlName="medication" maxlength="250">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Liều dùng</mat-label>
+      <input matInput formControlName="dosage" maxlength="250">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Bắt đầu *</mat-label>
+      <input matInput [matDatepicker]="p1" formControlName="startDate">
+      <mat-datepicker-toggle matIconSuffix [for]="p1"></mat-datepicker-toggle>
+      <mat-datepicker #p1></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Kết thúc</mat-label>
+      <input matInput [matDatepicker]="p2" formControlName="endDate">
+      <mat-datepicker-toggle matIconSuffix [for]="p2"></mat-datepicker-toggle>
+      <mat-datepicker #p2></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Người thực hiện</mat-label>
+      <input matInput formControlName="administeredBy" maxlength="250">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Hiệu quả / Kết quả</mat-label>
+      <textarea matInput formControlName="outcome" rows="3" maxlength="2000"></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Hủy</button>
+  <button mat-flat-button color="primary" (click)="onSave()" [disabled]="form.invalid">Lưu</button>
+</mat-dialog-actions>

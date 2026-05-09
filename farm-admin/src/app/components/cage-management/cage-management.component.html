@@ -1,0 +1,72 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title><strong>Cages</strong></mat-card-title>
+    <mat-card-subtitle>Manage Cages here.</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <div>
+      <button mat-button class="btn-create" (click)="createCage()" matTooltip="Create new Cage">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+
+    <table mat-table [dataSource]="dataSource" matSort matSortActive="name" matSortDirection="asc"
+      matSortDisableClear>
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let row">
+          {{row.name?row.name:''}}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="farmName">
+        <th mat-header-cell *matHeaderCellDef>Farm</th>
+        <td mat-cell *matCellDef="let row">{{row.farmName?row.farmName:''}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="cageType">
+        <th mat-header-cell *matHeaderCellDef>Type</th>
+        <td mat-cell *matCellDef="let row">{{row.cageType}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="capacity">
+        <th mat-header-cell *matHeaderCellDef>Capacity</th>
+        <td mat-cell *matCellDef="let row">{{row.capacity}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="currentAnimalCount">
+        <th mat-header-cell *matHeaderCellDef>Current Animal Count</th>
+        <td mat-cell *matCellDef="let row">{{row.currentAnimalCount}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="isActive">
+        <th mat-header-cell *matHeaderCellDef>Active</th>
+        <td mat-cell *matCellDef="let row">
+          <mat-icon *ngIf="row.isActive" svgIcon="check" class="colour-success"></mat-icon>
+          <mat-icon *ngIf="!row.isActive" svgIcon="close" class="colour-danger"></mat-icon>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Edit</th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-button (click)="editCage(row)" matTooltip="Edit">
+            <mat-icon svgIcon="pencil"></mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <div class="flex-row-between">
+      <span class="not-found-text">{{notFoundMessage}}</span>
+      <mat-paginator [length]="dataSource.totalRecords" [pageIndex]="pagingConstant.pageIndex"
+        [pageSize]="pagingConstant.pageSize" [pageSizeOptions]="pagingConstant.pageSizeOptions"
+        showFirstLastButtons>
+      </mat-paginator>
+    </div>
+  </mat-card-content>
+</mat-card>

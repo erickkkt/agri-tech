@@ -1,0 +1,145 @@
+<div class="animal-popup">
+    <h3 class="title">{{updateMode?'Edit Animal':'Create Animal'}}</h3>
+    <mat-dialog-content class="mat-dialog-content">
+        <form [formGroup]="form">
+            <section class="display-flex flex-direction-row">
+                
+                 <mat-form-field>
+                    <mat-label>Code</mat-label>
+                    <input required matInput data-test="code" placeholder="Code" formControlName="code"
+                        maxlength="10">
+                    <mat-error *ngIf="code.invalid">Code is required</mat-error>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Name</mat-label>
+                    <input required matInput data-test="name" placeholder="Name" formControlName="name"
+                        maxlength="250">
+                    <mat-error *ngIf="name.invalid">Name is required</mat-error>
+                </mat-form-field>
+            </section>
+
+            <section class="display-flex flex-direction-row">
+                <mat-form-field>
+                    <mat-label>Species</mat-label>
+                    <mat-select required data-test="species" placeholder="Species" formControlName="species">
+                        <mat-option *ngFor="let species of Species.values()" [value]="species">
+                            {{species}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="species.invalid">Species is required</mat-error>
+                </mat-form-field>
+            </section>
+            
+            <section class="display-flex flex-direction-row">             
+                <mat-form-field>
+                    <mat-label>Gender</mat-label>
+                    <mat-select required data-test="gender" formControlName="gender" placeholder="Gender">
+                        <mat-option *ngFor="let gender of Gender.values()" [value]="gender">
+                            {{gender}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="gender.invalid">Gender is required</mat-error>
+                </mat-form-field>
+            </section>
+
+            <section class="display-flex flex-direction-row">        
+                <mat-form-field>
+                    <mat-label>Weight (kg)</mat-label>
+                    <input required matInput type="number" data-test="weight" placeholder="Weight" formControlName="weight"
+                        min="0" step="0.1">
+                    <mat-error *ngIf="weight.invalid">Weight is required and must be greater than 0</mat-error>
+                </mat-form-field>
+                 <mat-form-field>
+                    <mat-label>Height (cm)</mat-label>
+                    <input required matInput type="number" data-test="height" placeholder="Height" formControlName="height"
+                        min="0" step="0.1">
+                    <mat-error *ngIf="height.invalid">Height is required and must be greater than 0</mat-error>
+                </mat-form-field>
+            </section>
+
+            <section class="display-flex flex-direction-row">
+                <mat-form-field>
+                    <mat-label>Birth Date</mat-label>
+                    <input matInput [matDatepicker]="picker" formControlName="birthDate" required>
+                    <mat-hint>MM/DD/YYYY</mat-hint>
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                    <mat-error *ngIf="birthDate.invalid">Birth Date is required</mat-error>
+                </mat-form-field>
+                 <mat-form-field>
+                    <mat-label>Arrival Date</mat-label>
+                    <input matInput [matDatepicker]="picker" formControlName="arrivalDate" required>
+                    <mat-hint>MM/DD/YYYY</mat-hint>
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                    <mat-error *ngIf="arrivalDate.invalid">Arrival Date is required</mat-error>
+                </mat-form-field>
+            </section>
+
+            <section class="display-flex flex-direction-row">
+                <mat-form-field>
+                    <mat-label>Health Status</mat-label>
+                    <mat-select required data-test="health-status" formControlName="healthStatus" placeholder="Health Status">
+                        <mat-option *ngFor="let healthStatus of HealthStatus.values()" [value]="healthStatus">
+                            {{healthStatus}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="healthStatus.invalid">Health Status is required</mat-error>
+                </mat-form-field>
+            </section>
+
+            
+             <section class="display-flex flex-direction-row">
+                <mat-form-field>
+                    <mat-select data-test="farm" required placeholder="Farm" formControlName="farmId">
+                        <mat-option *ngFor="let farm of farms" [value]="farm.id">
+                            {{farm.name}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="farmId.invalid">Farm is required</mat-error>
+                </mat-form-field>
+            </section>
+
+            <section class="display-flex flex-direction-row">
+                <mat-form-field>
+                    <mat-label>Cage</mat-label>
+                    <mat-select required data-test="cage-id" placeholder="Select Cage" formControlName="cageId">
+                        <mat-option *ngFor="let cage of cages" [value]="cage.id">
+                            {{cage.name}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="cageId.invalid">Cage is required</mat-error>
+                </mat-form-field>
+            </section>
+
+
+            <section class="display-flex flex-direction-row">
+                <mat-form-field>
+                    <mat-label>Description</mat-label>
+                    <textarea matInput data-test="description" placeholder="Description" formControlName="description"
+                        maxlength="500"></textarea>
+                </mat-form-field>
+            </section>
+
+            <section class="display-flex flex-direction-row">
+                <mat-form-field>
+                    <mat-label>Select status from dropdown</mat-label>
+                    <mat-select data-test="status" placeholder="Select status from dropdown" formControlName="status"
+                        required>
+                        <mat-option *ngFor="let status of Status.values()" [value]="status">
+                            {{status}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="status.invalid">Status is required</mat-error>
+                </mat-form-field>
+            </section>
+
+        </form>
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="justify-items-end button-row">
+        <button mat-button mat-raised-button color="primary" [disabled]="!form.valid || form.pristine"
+            (click)="onSave()">{{updateMode?'Update':'Save'}}</button>
+        <button mat-button mat-raised-button color="secondary" (click)="onCloseDialog(false)">Cancel</button>
+    </mat-dialog-actions>
+</div>

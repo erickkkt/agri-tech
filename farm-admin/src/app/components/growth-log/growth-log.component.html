@@ -1,0 +1,67 @@
+<div class="page-growth-log" style="padding: 16px;">
+  <h2>Nhật ký tăng trưởng</h2>
+
+  <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 16px;">
+    <mat-form-field appearance="outline" style="min-width: 280px;">
+      <mat-label>Chọn vật nuôi</mat-label>
+      <mat-select [(value)]="selectedAnimalId" (selectionChange)="loadLogs()">
+        <mat-option *ngFor="let a of animals" [value]="a.id">{{ a.code }} - {{ a.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- Inline add new entry -->
+  <mat-card style="margin-bottom: 16px;">
+    <mat-card-header><mat-card-title>Ghi nhận mới</mat-card-title></mat-card-header>
+    <mat-card-content>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <mat-form-field appearance="outline">
+          <mat-label>Cân nặng (kg)</mat-label>
+          <input matInput type="number" [(ngModel)]="newWeight">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Chiều cao (cm)</mat-label>
+          <input matInput type="number" [(ngModel)]="newHeight">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>BCS (1-9)</mat-label>
+          <input matInput type="number" min="1" max="9" [(ngModel)]="newBcs">
+        </mat-form-field>
+        <mat-form-field appearance="outline" style="flex: 1; min-width: 240px;">
+          <mat-label>Ghi chú</mat-label>
+          <input matInput [(ngModel)]="newNotes">
+        </mat-form-field>
+        <button mat-flat-button color="primary" (click)="addLog()" [disabled]="!selectedAnimalId || newWeight == null">Thêm</button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- History -->
+  <table mat-table [dataSource]="logs" style="width: 100%;">
+    <ng-container matColumnDef="date">
+      <th mat-header-cell *matHeaderCellDef>Ngày ghi nhận</th>
+      <td mat-cell *matCellDef="let l">{{ l.recordedAt | date:'yyyy-MM-dd HH:mm' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="weight">
+      <th mat-header-cell *matHeaderCellDef>Cân nặng (kg)</th>
+      <td mat-cell *matCellDef="let l">{{ l.weight }}</td>
+    </ng-container>
+    <ng-container matColumnDef="height">
+      <th mat-header-cell *matHeaderCellDef>Chiều cao (cm)</th>
+      <td mat-cell *matCellDef="let l">{{ l.height }}</td>
+    </ng-container>
+    <ng-container matColumnDef="bcs">
+      <th mat-header-cell *matHeaderCellDef>BCS</th>
+      <td mat-cell *matCellDef="let l">{{ l.bodyConditionScore }}</td>
+    </ng-container>
+    <ng-container matColumnDef="notes">
+      <th mat-header-cell *matHeaderCellDef>Ghi chú</th>
+      <td mat-cell *matCellDef="let l">{{ l.notes }}</td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="['date','weight','height','bcs','notes']"></tr>
+    <tr mat-row *matRowDef="let row; columns: ['date','weight','height','bcs','notes']"></tr>
+  </table>
+  <div *ngIf="logs.length === 0" style="padding: 24px; text-align: center; color: #888;">
+    Chưa có nhật ký nào.
+  </div>
+</div>

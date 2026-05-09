@@ -1,0 +1,16 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.fill-remaining-space {
+  /*This fills the remaining space, by using flexbox.
+  Every toolbar row uses a flexbox row layout. */
+  flex: 1 1 auto;
+}
+
+.side-nav {
+  flex: 1 1 1e-09px;
+  box-sizing: border-box;
+}

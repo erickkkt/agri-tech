@@ -1,0 +1,29 @@
+<div class="page-alerts" style="padding: 16px;">
+  <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+    <h2 style="flex: 1;">Cảnh báo hệ thống</h2>
+    <mat-slide-toggle [(ngModel)]="unreadOnly" (change)="load()">Chỉ hiển thị chưa đọc</mat-slide-toggle>
+    <button mat-stroked-button (click)="markAllRead()">Đánh dấu đã đọc tất cả</button>
+  </div>
+
+  <div *ngIf="alerts.length === 0" style="padding: 36px; text-align: center; color: #888;">
+    Không có cảnh báo nào.
+  </div>
+
+  <div *ngFor="let a of alerts"
+       style="padding: 12px 16px; border-left: 4px solid; margin-bottom: 8px; background: #fafafa;"
+       [style.borderLeftColor]="severityColor(a.severity)">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <strong>{{ a.title }}</strong>
+      <span style="font-size: 0.8rem; color: #666;">[{{ getSeverityLabel(a.severity) }}]</span>
+      <span style="font-size: 0.8rem; color: #666;">{{ getTypeLabel(a.type) }}</span>
+      <span style="flex: 1;"></span>
+      <span style="font-size: 0.8rem; color: #888;">{{ a.createdAt | date:'yyyy-MM-dd HH:mm' }}</span>
+      <button mat-button *ngIf="!a.isRead" color="primary" (click)="markRead(a)">Đã đọc</button>
+    </div>
+    <div style="margin-top: 4px;">{{ a.message }}</div>
+    <div *ngIf="a.farmName || a.animalCode" style="margin-top: 4px; font-size: 0.85rem; color: #666;">
+      <span *ngIf="a.farmName">Trang trại: {{ a.farmName }}</span>
+      <span *ngIf="a.animalCode"> | Vật nuôi: {{ a.animalCode }}</span>
+    </div>
+  </div>
+</div>

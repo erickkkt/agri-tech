@@ -1,0 +1,88 @@
+<div class="page-disease-management" style="padding: 16px;">
+  <h2>Lịch sử bệnh &amp; điều trị</h2>
+
+  <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 16px;">
+    <mat-form-field appearance="outline" style="min-width: 280px;">
+      <mat-label>Chọn vật nuôi</mat-label>
+      <mat-select [(value)]="selectedAnimalId" (selectionChange)="loadAll()">
+        <mat-option *ngFor="let a of animals" [value]="a.id">{{ a.code }} - {{ a.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <button mat-flat-button color="primary" (click)="createDisease()" [disabled]="!selectedAnimalId">
+      <mat-icon>add</mat-icon> Ghi nhận bệnh
+    </button>
+    <button mat-stroked-button color="primary" (click)="createTreatment()" [disabled]="!selectedAnimalId">
+      <mat-icon>medical_services</mat-icon> Ghi nhận điều trị
+    </button>
+  </div>
+
+  <mat-tab-group>
+    <mat-tab label="Lịch sử bệnh">
+      <table mat-table [dataSource]="diseases" style="width: 100%;">
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef>Ngày chẩn đoán</th>
+          <td mat-cell *matCellDef="let d">{{ d.diagnosedAt | date:'yyyy-MM-dd' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Tên bệnh</th>
+          <td mat-cell *matCellDef="let d">{{ d.diseaseName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="severity">
+          <th mat-header-cell *matHeaderCellDef>Mức độ</th>
+          <td mat-cell *matCellDef="let d">{{ getSeverityLabel(d.severity) }}</td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Trạng thái</th>
+          <td mat-cell *matCellDef="let d">{{ getStatusLabel(d.status) }}</td>
+        </ng-container>
+        <ng-container matColumnDef="diagnosedBy">
+          <th mat-header-cell *matHeaderCellDef>Người chẩn đoán</th>
+          <td mat-cell *matCellDef="let d">{{ d.diagnosedBy }}</td>
+        </ng-container>
+        <ng-container matColumnDef="notes">
+          <th mat-header-cell *matHeaderCellDef>Ghi chú</th>
+          <td mat-cell *matCellDef="let d">{{ d.notes }}</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="['date','name','severity','status','diagnosedBy','notes']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['date','name','severity','status','diagnosedBy','notes']"></tr>
+      </table>
+      <div *ngIf="diseases.length === 0" style="padding: 24px; text-align: center; color: #888;">
+        Chưa có bệnh nào ghi nhận.
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Lịch sử điều trị">
+      <table mat-table [dataSource]="treatments" style="width: 100%;">
+        <ng-container matColumnDef="start">
+          <th mat-header-cell *matHeaderCellDef>Bắt đầu</th>
+          <td mat-cell *matCellDef="let t">{{ t.startDate | date:'yyyy-MM-dd' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="end">
+          <th mat-header-cell *matHeaderCellDef>Kết thúc</th>
+          <td mat-cell *matCellDef="let t">{{ t.endDate | date:'yyyy-MM-dd' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="medication">
+          <th mat-header-cell *matHeaderCellDef>Thuốc</th>
+          <td mat-cell *matCellDef="let t">{{ t.medication }}</td>
+        </ng-container>
+        <ng-container matColumnDef="dosage">
+          <th mat-header-cell *matHeaderCellDef>Liều dùng</th>
+          <td mat-cell *matCellDef="let t">{{ t.dosage }}</td>
+        </ng-container>
+        <ng-container matColumnDef="disease">
+          <th mat-header-cell *matHeaderCellDef>Liên quan</th>
+          <td mat-cell *matCellDef="let t">{{ t.diseaseName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="outcome">
+          <th mat-header-cell *matHeaderCellDef>Hiệu quả</th>
+          <td mat-cell *matCellDef="let t">{{ t.outcome }}</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="['start','end','medication','dosage','disease','outcome']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['start','end','medication','dosage','disease','outcome']"></tr>
+      </table>
+      <div *ngIf="treatments.length === 0" style="padding: 24px; text-align: center; color: #888;">
+        Chưa có đợt điều trị nào.
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

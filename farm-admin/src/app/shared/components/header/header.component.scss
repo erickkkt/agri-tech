@@ -1,0 +1,54 @@
+.logo-link {
+  margin-right: 15px;
+}
+
+.align-self-center {
+  align-self: center;
+  display: flex;
+}
+
+mat-toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  background-color: #5588ec;
+  color: #FFF;
+}
+
+.welcome-message {
+  margin-right: 1rem;
+}
+
+mat-nav-list {
+  padding: 0;
+}
+
+.mdc-list-item {
+  padding-left: 8px;
+}
+
+.main-search-control {
+  height: 40px;
+}
+
+@media only screen and (max-width: 768px) {
+  .search-header {
+    display: none;
+  }
+}
+
+.search-header {
+  place-content: flex-start space-around;
+  align-items: flex-start;
+  flex-direction: row;
+  box-sizing: border-box;
+  display: flex;
+  flex: 1 1 100%;
+  max-width: 400%;
+}
+
+.toolbar {
+  height: 65px !important;
+}

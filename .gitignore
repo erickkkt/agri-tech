@@ -1,0 +1,111 @@
+# ============ OS ============
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ============ Editors ============
+.idea/
+.vs/
+*.swp
+*.swo
+*~
+
+# ============ .NET / ASP.NET Core (farm-api) ============
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]uilds/
+[Ll]og/
+[Ll]ogs/
+
+# Build results
+*.user
+*.userosscache
+*.sln.docstates
+*.dll
+*.pdb
+*.exe
+
+# NuGet packages
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+
+# EF Core / migrations cache
+*.mdf
+*.ldf
+*.ndf
+
+# ASP.NET scaffolding
+ScaffoldingReadMe.txt
+StyleCopReport.xml
+
+# Test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# Publish output
+publish/
+PublishProfiles/
+
+# User-specific files
+*.suo
+*.userprefs
+
+# ============ Node.js / Angular (farm-admin, farm-user) ============
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json.bak
+
+# Angular outputs
+dist/
+tmp/
+out-tsc/
+.angular/
+*.tsbuildinfo
+
+# Karma / Jest / coverage
+coverage/
+*.lcov
+.nyc_output/
+
+# ============ Environment & secrets ============
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Connection strings / secrets - DO NOT commit
+appsettings.Production.json
+appsettings.Local.json
+secrets.json
+
+# ============ Docker / runtime ============
+*.dockerignore.bak
+
+# ============ Logs ============
+*.log
+logs/
+
+# ============ Generated docs ============
+**/.~lock.*
+
+# ============ Temporary files ============
+*.tmp
+*.temp
+*.bak

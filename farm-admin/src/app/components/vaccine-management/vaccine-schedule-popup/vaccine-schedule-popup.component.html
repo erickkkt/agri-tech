@@ -1,0 +1,34 @@
+<h2 mat-dialog-title>Tạo lịch tiêm</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" style="display: flex; flex-direction: column; gap: 8px; min-width: 460px;">
+    <mat-form-field appearance="outline">
+      <mat-label>Vật nuôi *</mat-label>
+      <mat-select formControlName="animalId">
+        <mat-option *ngFor="let a of animals" [value]="a.id">{{ a.code }} - {{ a.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Vaccine *</mat-label>
+      <mat-select formControlName="vaccineId">
+        <mat-option *ngFor="let v of vaccines" [value]="v.id">{{ v.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Ngày tiêm dự kiến *</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="scheduledDate">
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Ghi chú</mat-label>
+      <textarea matInput formControlName="notes" rows="3" maxlength="2000"></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Hủy</button>
+  <button mat-flat-button color="primary" (click)="onSave()" [disabled]="form.invalid">Lưu</button>
+</mat-dialog-actions>

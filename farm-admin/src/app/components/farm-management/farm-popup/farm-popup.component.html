@@ -1,0 +1,56 @@
+<div class="farm-popup ">
+    <h3 class="title">{{updateMode?'Edit Farm':'Create Farm'}}</h3>
+    <mat-dialog-content class="mat-dialog-content">
+        <form [formGroup]="form">
+            <section class="display-flex flex-direction-row">
+                <mat-form-field>
+                    <mat-label>Name</mat-label>
+                    <input required matInput data-test="value" placeholder="Name" formControlName="name"
+                        maxlength="250">
+                    <mat-error *ngIf="name.invalid">Name is required</mat-error>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Owner Name</mat-label>
+                    <input required matInput data-test="owner-name" placeholder="Owner Name" formControlName="ownerName"
+                        maxlength="250">
+                    <mat-error *ngIf="ownerName.invalid">Owner Name is required</mat-error>
+                </mat-form-field>
+            </section>
+            <section class="display-flex flex-direction-row">
+                <mat-form-field>
+                    <mat-label>Description</mat-label>
+                    <textarea matInput data-test="description" placeholder="Description" formControlName="description"
+                        maxlength="500"></textarea>
+                </mat-form-field>
+            </section>
+
+             <section class="display-flex flex-direction-row">
+                <mat-form-field>
+                    <mat-label>Location</mat-label>
+                    <textarea matInput data-test="location" placeholder="Location" formControlName="location"
+                        maxlength="4000"></textarea>
+                </mat-form-field>
+            </section>
+
+            <section class="display-flex flex-direction-row">
+                <mat-form-field>
+                    <mat-label>Select status from dropdown</mat-label>
+                    <mat-select data-test="status" placeholder="Select status from dropdown" formControlName="status"
+                        required>
+                        <mat-option *ngFor="let status of Status.values()" [value]="status">
+                            {{status}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="status.invalid">Status is required</mat-error>
+                </mat-form-field>
+            </section>
+
+        </form>
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="justify-items-end button-row">
+        <button mat-button mat-raised-button color="primary" [disabled]="!form.valid || form.pristine"
+            (click)="onSave()">{{updateMode?'Update':'Save'}}</button>
+        <button mat-button mat-raised-button color="secondary" (click)="onCloseDialog(false)">Cancel</button>
+    </mat-dialog-actions>
+</div>
