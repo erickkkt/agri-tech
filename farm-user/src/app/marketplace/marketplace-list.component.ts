@@ -7,7 +7,8 @@ import { Listing, ListingSearchQuery } from '../models/listing.model';
  */
 @Component({
   selector: 'app-marketplace-list',
-  templateUrl: './marketplace-list.component.html'
+  templateUrl: './marketplace-list.component.html',
+  standalone: false
 })
 export class MarketplaceListComponent implements OnInit {
   listings: Listing[] = [];

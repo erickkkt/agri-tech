@@ -3,6 +3,14 @@ version: '3.8'
 # ===================================================================
 # Agri-Tech monorepo - full stack orchestration
 # Usage: docker compose up --build
+#   - Postgres   → localhost:5432
+#   - farm-api   → http://localhost:8080
+#   - farm-admin → http://localhost:4200
+#   - farm-user  → http://localhost:4300
+#
+# Both SPAs (admin + user) run nginx on port 80 inside the container
+# and reverse-proxy /api/* to farm-api:8080, so the browser is
+# always same-origin (no CORS configuration required).
 # ===================================================================
 
 services:
@@ -49,7 +57,7 @@ services:
     depends_on:
       - farm-api
     ports:
-      - "4200:4200"
+      - "4200:80"
     networks:
       - agri-tech-net
 
@@ -61,7 +69,7 @@ services:
     depends_on:
       - farm-api
     ports:
-      - "4300:4300"
+      - "4300:80"
     networks:
       - agri-tech-net
 

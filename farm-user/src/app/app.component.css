@@ -1,0 +1,57 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.topbar {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.topbar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: #111827;
+}
+.brand .logo { font-size: 1.6rem; }
+
+nav a {
+  margin-left: 18px;
+  color: #374151;
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+nav a.active {
+  background: #eef2ff;
+  color: #2563eb;
+}
+
+main {
+  flex: 1;
+}
+
+.footer {
+  border-top: 1px solid #e5e7eb;
+  background: white;
+  padding: 16px 0;
+  color: #6b7280;
+  font-size: 0.85rem;
+}

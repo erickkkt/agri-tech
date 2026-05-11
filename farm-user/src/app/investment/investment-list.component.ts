@@ -8,7 +8,8 @@ import { InvestmentOffer } from '../models/investment.model';
  */
 @Component({
   selector: 'app-investment-list',
-  templateUrl: './investment-list.component.html'
+  templateUrl: './investment-list.component.html',
+  standalone: false
 })
 export class InvestmentListComponent implements OnInit {
   offers: InvestmentOffer[] = [];

@@ -1,0 +1,47 @@
+/* Global styles for farm-user */
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: Inter, "Helvetica Neue", Arial, sans-serif;
+  color: #1f2937;
+  background: #f7f8fa;
+}
+
+* { box-sizing: border-box; }
+
+a { color: #2563eb; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+button {
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid #2563eb;
+  background: #2563eb;
+  color: white;
+  font-size: 0.9rem;
+}
+button:disabled { background: #9ca3af; border-color: #9ca3af; cursor: not-allowed; }
+button.secondary { background: white; color: #2563eb; }
+
+input, select {
+  padding: 7px 10px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+h1, h2, h3 { color: #111827; }
+
+.container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+.card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  transition: box-shadow 0.15s;
+}
+.card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }

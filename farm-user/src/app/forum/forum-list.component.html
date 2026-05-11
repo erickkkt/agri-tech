@@ -1,0 +1,23 @@
+<div class="container">
+  <h2>Diễn đàn cộng đồng</h2>
+  <p style="color:#6b7280;">Chia sẻ kinh nghiệm chăn nuôi, kỹ thuật, phòng bệnh.</p>
+
+  <div *ngIf="loading" style="padding:24px;color:#6b7280;">Đang tải...</div>
+  <div *ngIf="error" style="padding:16px;background:#fef2f2;color:#b91c1c;border-radius:6px;">{{ error }}</div>
+
+  <div *ngIf="!loading && threads.length === 0 && !error" style="padding:36px;text-align:center;color:#9ca3af;">
+    Chưa có chủ đề nào.
+  </div>
+
+  <div class="thread-list">
+    <div class="card thread" *ngFor="let t of threads">
+      <div class="thread-title">{{ t.title }}</div>
+      <div class="thread-meta">
+        <span>{{ t.category }}</span> ·
+        <span>{{ t.authorUserName }}</span> ·
+        <span>{{ t.replyCount }} trả lời</span>
+        <span *ngIf="t.lastReplyAt"> · {{ t.lastReplyAt | date:'short' }}</span>
+      </div>
+    </div>
+  </div>
+</div>
