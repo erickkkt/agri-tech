@@ -198,7 +198,11 @@ void Configure(ConfigurationManager configuration, IWebHostEnvironment environme
         app.UseDeveloperExceptionPage();
     }
 
-    app.UseHttpsRedirection();
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseHttpsRedirection();
+    }
+    
     app.UseStaticFiles();
     app.UseRouting();
     app.UseCors("CorsPolicy");
