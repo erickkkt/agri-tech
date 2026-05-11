@@ -1,30 +1,3 @@
-//var builder = WebApplication.CreateBuilder(args);
-
-//// Add services to the container.
-
-//builder.Services.AddControllers();
-//// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-//builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen();
-
-//var app = builder.Build();
-
-//// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-//    app.UseSwagger();
-//    app.UseSwaggerUI();
-//}
-
-//app.UseHttpsRedirection();
-
-//app.UseAuthorization();
-
-//app.MapControllers();
-
-//app.Run();
-
-
 
 using Farm.Api.Extensions;
 using Farm.Api.Hubs;
@@ -33,16 +6,8 @@ using Farm.Business.Jobs;
 using Farm.Domain.FarmDbContexts;
 using Hangfire;
 using Hangfire.PostgreSql;
-using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -94,20 +59,45 @@ void ConfigureServices(ConfigurationManager configuration, IWebHostEnvironment e
     builder.Services.AddOptions();
     builder.Services.AddLogging();
 
+    // CORS - .NET 10 hardened WithOrigins to throw on null entries, so we collect, filter, and dedupe.
+    // Origin sources (in priority order):
+    //   1. Cors:AllowedOrigins (string array)        ← preferred, configure in appsettings
+    //   2. legacy Admin:BaseUrl / ApiBaseUrl / SilentRefreshUrl
+    //   3. legacy FarmAdmin:BaseUrl / ApiBaseUrl / SilentRefreshUrl   (used in appsettings.Azure.json)
+    var corsOrigins = (configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>())
+        .Concat(new[]
+        {
+            configuration.GetValue<string>("Admin:BaseUrl"),
+            configuration.GetValue<string>("Admin:ApiBaseUrl"),
+            configuration.GetValue<string>("Admin:SilentRefreshUrl"),
+            configuration.GetValue<string>("FarmAdmin:BaseUrl"),
+            configuration.GetValue<string>("FarmAdmin:ApiBaseUrl"),
+            configuration.GetValue<string>("FarmAdmin:SilentRefreshUrl"),
+        })
+        .Where(o => !string.IsNullOrWhiteSpace(o))
+        .Select(o => o!.TrimEnd('/'))
+        .Distinct()
+        .ToArray();
+
     builder.Services.AddCors(options =>
     {
-        options.AddPolicy("CorsPolicy",
-            builder => builder
-               .AllowAnyHeader()
-               .AllowAnyMethod()
-               .AllowCredentials()
-               .WithOrigins(
-                   configuration.GetValue<string>("Admin:BaseUrl"),
-                   configuration.GetValue<string>("Admin:ApiBaseUrl"),
-                   configuration.GetValue<string>("Admin:SilentRefreshUrl")
-               )
-           .WithExposedHeaders("Location")
-    );
+        options.AddPolicy("CorsPolicy", policy =>
+        {
+            policy.AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .WithExposedHeaders("Location");
+
+            if (corsOrigins.Length > 0)
+            {
+                policy.WithOrigins(corsOrigins).AllowCredentials();
+            }
+            else
+            {
+                // No origins configured (typical first-deploy scenario). Allow any origin so the
+                // app starts; you cannot combine AllowAnyOrigin with AllowCredentials per CORS spec.
+                policy.AllowAnyOrigin();
+            }
+        });
     });
 
     builder.Services.AddApiVersioning(options =>
