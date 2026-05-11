@@ -110,36 +110,34 @@ void ConfigureServices(ConfigurationManager configuration, IWebHostEnvironment e
                                         new MediaTypeApiVersionReader("x-api-version"));
     });
 
-    if (!environment.IsProduction())
+    // Swagger - always register the generator service so `app.UseSwagger()` middleware
+    // can resolve ISwaggerProvider regardless of environment. Whether to expose the UI
+    // (i.e. call `app.UseSwagger()` / `UseSwaggerUI()`) is a runtime decision below.
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen(options =>
     {
-        // Configure Swagger
-        builder.Services.AddSwaggerGen(
-            options =>
-            {
-                var openApiSecurityScheme = new OpenApiSecurityScheme
-                {
-                    Reference = new OpenApiReference
-                    {
-                        Type = ReferenceType.SecurityScheme,
-                        Id = "Bearer"
-                    },
-                    Description = "Please insert JWT with Bearer into field",
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Scheme = "Bearer",
-                    Type = SecuritySchemeType.ApiKey
-                };
+        options.SwaggerDoc("v1", new OpenApiInfo { Title = "Farm API", Version = "v1" });
 
-                options.AddSecurityDefinition("Bearer", openApiSecurityScheme);
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        openApiSecurityScheme,
-                        new List<string>()
-                    }
-                });
-            });
-    }
+        var openApiSecurityScheme = new OpenApiSecurityScheme
+        {
+            Reference = new OpenApiReference
+            {
+                Type = ReferenceType.SecurityScheme,
+                Id = "Bearer"
+            },
+            Description = "Please insert JWT with Bearer into field",
+            Name = "Authorization",
+            In = ParameterLocation.Header,
+            Scheme = "Bearer",
+            Type = SecuritySchemeType.ApiKey
+        };
+
+        options.AddSecurityDefinition("Bearer", openApiSecurityScheme);
+        options.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            { openApiSecurityScheme, new List<string>() }
+        });
+    });
 
     var farmDbConn = configuration.GetConnectionString("farmDb")
                      ?? Environment.GetEnvironmentVariable("ConnectionStrings__farmDb");
