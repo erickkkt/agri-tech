@@ -158,23 +158,23 @@ void ConfigureServices(ConfigurationManager configuration, IWebHostEnvironment e
     builder.Services.AddSignalR();
 
     // Hangfire - background scheduled jobs (vaccine reminder, weight drop, low stock, daily report)
-    var hangfireConn = configuration.GetConnectionString("farmDb")
-                       ?? Environment.GetEnvironmentVariable("ConnectionStrings__farmDb");
-    builder.Services.AddHangfire(cfg =>
-    {
-        cfg.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-           .UseSimpleAssemblyNameTypeSerializer()
-           .UseRecommendedSerializerSettings()
-           .UsePostgreSqlStorage(opt => opt.UseNpgsqlConnection(hangfireConn),
-               new PostgreSqlStorageOptions
-               {
-                   SchemaName = "hangfire",
-                   PrepareSchemaIfNecessary = true,
-                   QueuePollInterval = TimeSpan.FromSeconds(15),
-                   InvisibilityTimeout = TimeSpan.FromMinutes(30)
-               });
-    });
-    builder.Services.AddHangfireServer();
+    // var hangfireConn = configuration.GetConnectionString("farmDb")
+    //                    ?? Environment.GetEnvironmentVariable("ConnectionStrings__farmDb");
+    // builder.Services.AddHangfire(cfg =>
+    // {
+    //     cfg.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    //        .UseSimpleAssemblyNameTypeSerializer()
+    //        .UseRecommendedSerializerSettings()
+    //        .UsePostgreSqlStorage(opt => opt.UseNpgsqlConnection(hangfireConn),
+    //            new PostgreSqlStorageOptions
+    //            {
+    //                SchemaName = "hangfire",
+    //                PrepareSchemaIfNecessary = true,
+    //                QueuePollInterval = TimeSpan.FromSeconds(15),
+    //                InvisibilityTimeout = TimeSpan.FromMinutes(30)
+    //            });
+    // });
+    // builder.Services.AddHangfireServer();
 }
 
 void Configure(ConfigurationManager configuration, IWebHostEnvironment environment)
@@ -202,7 +202,7 @@ void Configure(ConfigurationManager configuration, IWebHostEnvironment environme
     {
         app.UseHttpsRedirection();
     }
-    
+
     app.UseStaticFiles();
     app.UseRouting();
     app.UseCors("CorsPolicy");
@@ -212,14 +212,14 @@ void Configure(ConfigurationManager configuration, IWebHostEnvironment environme
     app.UseAuthorization();
 
     // Hangfire dashboard (consider restricting via authorization filter in production)
-    app.UseHangfireDashboard("/hangfire");
+    // app.UseHangfireDashboard("/hangfire");
 
     // Schedule recurring jobs after the app has started so DI is available
-    RecurringJob.AddOrUpdate<IVaccineReminderJob>("vaccine-reminder", j => j.RunAsync(), Cron.Daily(6));
-    RecurringJob.AddOrUpdate<IWeightDropDetectorJob>("weight-drop", j => j.RunAsync(), Cron.Daily(22));
-    RecurringJob.AddOrUpdate<IStagnantGrowthJob>("stagnant-growth", j => j.RunAsync(), Cron.Weekly(DayOfWeek.Sunday));
-    RecurringJob.AddOrUpdate<IFeedLowStockJob>("feed-low-stock", j => j.RunAsync(), "0 */6 * * *");
-    RecurringJob.AddOrUpdate<IDailyReportJob>("daily-report", j => j.RunAsync(), "30 23 * * *");
+    // RecurringJob.AddOrUpdate<IVaccineReminderJob>("vaccine-reminder", j => j.RunAsync(), Cron.Daily(6));
+    // RecurringJob.AddOrUpdate<IWeightDropDetectorJob>("weight-drop", j => j.RunAsync(), Cron.Daily(22));
+    // RecurringJob.AddOrUpdate<IStagnantGrowthJob>("stagnant-growth", j => j.RunAsync(), Cron.Weekly(DayOfWeek.Sunday));
+    // RecurringJob.AddOrUpdate<IFeedLowStockJob>("feed-low-stock", j => j.RunAsync(), "0 */6 * * *");
+    // RecurringJob.AddOrUpdate<IDailyReportJob>("daily-report", j => j.RunAsync(), "30 23 * * *");
 
     app.UseEndpoints(endpoints =>
     {
