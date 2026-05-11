@@ -3,7 +3,7 @@
 # Multi-stage build: restore → build → publish → runtime
 # =====================================================================
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /app
 EXPOSE 8080
 # Postgres needs ICU at runtime for case-insensitive collations and globalization-aware string comparisons
@@ -15,7 +15,7 @@ ENV ASPNETCORE_URLS=http://+:8080 \
     DOTNET_USE_POLLING_FILE_WATCHER=false
 
 # ---------- build ----------
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
