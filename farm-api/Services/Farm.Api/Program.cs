@@ -63,16 +63,16 @@ void ConfigureServices(ConfigurationManager configuration, IWebHostEnvironment e
     // Origin sources (in priority order):
     //   1. Cors:AllowedOrigins (string array)        ← preferred, configure in appsettings
     //   2. legacy Admin:BaseUrl / ApiBaseUrl / SilentRefreshUrl
-    //   3. legacy FarmAdmin:BaseUrl / ApiBaseUrl / SilentRefreshUrl   (used in appsettings.Azure.json)
+    //   3. legacy Webuser:BaseUrl / ApiBaseUrl / SilentRefreshUrl   (used in appsettings.Azure.json)
     var corsOrigins = (configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>())
         .Concat(new[]
         {
             configuration.GetValue<string>("Admin:BaseUrl"),
             configuration.GetValue<string>("Admin:ApiBaseUrl"),
             configuration.GetValue<string>("Admin:SilentRefreshUrl"),
-            configuration.GetValue<string>("FarmAdmin:BaseUrl"),
-            configuration.GetValue<string>("FarmAdmin:ApiBaseUrl"),
-            configuration.GetValue<string>("FarmAdmin:SilentRefreshUrl"),
+            configuration.GetValue<string>("Webuser:BaseUrl"),
+            configuration.GetValue<string>("Webuser:ApiBaseUrl"),
+            configuration.GetValue<string>("Webuser:SilentRefreshUrl"),
         })
         .Where(o => !string.IsNullOrWhiteSpace(o))
         .Select(o => o!.TrimEnd('/'))
