@@ -1,7 +1,12 @@
-// Production env. In docker, nginx in farm-user reverse-proxies "/api/" → http://farm-api:8080/
-// so apiBaseUrl is empty (relative same-origin), which sidesteps CORS entirely.
+// Production env. Real apiUrl is loaded at runtime from /assets/config.json (token-replaced
+// during CI/CD), so apiUrl below is just a fallback for dev.
 export const environment = {
   production: true,
-  apiBaseUrl: '',
-  apiVersion: 'v1'
+  test: false
+};
+
+export const configuration = {
+  apiUrl: '',
+  title: 'Farm User',
+  version: 'v1'
 };

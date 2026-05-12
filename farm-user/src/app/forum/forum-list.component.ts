@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environments/environment';
+import { HttpBaseService } from '../shared/services/http-base.service';
+import { ApiEndPoints } from '../shared/config/api-end-points';
 
 interface ForumThread {
   id: string;
@@ -22,15 +22,19 @@ export class ForumListComponent implements OnInit {
   loading = false;
   error: string | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private readonly http: HttpBaseService,
+    private readonly api: ApiEndPoints
+  ) {}
 
-  ngOnInit() {
+  async ngOnInit(): Promise<void> {
     this.loading = true;
-    this.http
-      .get<ForumThread[]>(`${environment.apiBaseUrl}/api/v1/forum/threads`)
-      .subscribe({
-        next: data => { this.threads = data ?? []; this.loading = false; },
-        error: err => { this.error = err?.message ?? 'Lỗi tải diễn đàn'; this.loading = false; }
-      });
+    try {
+      this.threads = (await this.http.getDataAsync<ForumThread[]>(this.api.getForumThreads())) ?? [];
+    } catch (err: any) {
+      this.error = err?.message ?? 'Lỗi tải diễn đàn';
+    } finally {
+      this.loading = false;
+    }
   }
 }

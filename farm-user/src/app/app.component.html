@@ -9,6 +9,15 @@
       <a routerLink="/investments" routerLinkActive="active">Đầu tư</a>
       <a routerLink="/forum" routerLinkActive="active">Diễn đàn</a>
     </nav>
+    <div class="auth">
+      <ng-container *ngIf="isAuthenticated$ | async; else loginBtn">
+        <span class="user-name">{{ (userInfo$ | async)?.['name'] || 'Tài khoản' }}</span>
+        <button class="secondary" (click)="logout()">Đăng xuất</button>
+      </ng-container>
+      <ng-template #loginBtn>
+        <button (click)="login()">Đăng nhập</button>
+      </ng-template>
+    </div>
   </div>
 </header>
 
