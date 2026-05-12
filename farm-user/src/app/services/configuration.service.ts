@@ -35,6 +35,15 @@ export class ConfigurationService {
             result.identityUrl = '';
           }
 
+          // Defensive: strip common wrong suffixes so `<issuer>/.well-known/openid-configuration`
+          // resolves correctly even if CI/CD injects the authorize endpoint by mistake.
+          // Valid issuers look like:
+          //   https://login.microsoftonline.com/<tenant>/v2.0
+          //   https://<tenant>.b2clogin.com/<tenant>.onmicrosoft.com/<policy>/v2.0
+          // NOT .../oauth2/v2.0/authorize
+          result.identityUrl = this.normalizeIssuer(result.identityUrl);
+          result.apiUrl = (result.apiUrl ?? '').replace(/\/+$/, '');
+
           if (result.apiUrl) this.moduleConfig.resourceServer.allowedUrls!.push(result.apiUrl);
           if (result.identityUrl) this.moduleConfig.resourceServer.allowedUrls!.push(result.identityUrl);
 
@@ -55,6 +64,24 @@ export class ConfigurationService {
 
   get identityServerAddress(): string {
     return this.clientConfig?.identityUrl ?? '';
+  }
+
+  /**
+   * Strip authorize/token endpoint suffixes from an issuer URL so the OIDC discovery
+   * URL `<issuer>/.well-known/openid-configuration` resolves correctly.
+   *
+   * Wrong (authorize endpoint)   → corrected (issuer base)
+   *   .../<tenant>/oauth2/v2.0/authorize → .../<tenant>/v2.0
+   *   .../<tenant>/oauth2/authorize      → .../<tenant>
+   *   .../<tenant>/v2.0/                  → .../<tenant>/v2.0
+   */
+  private normalizeIssuer(url: string): string {
+    if (!url) return '';
+    return url
+      .replace(/\/oauth2\/v2\.0\/(authorize|token)\/?$/i, '/v2.0')
+      .replace(/\/oauth2\/(authorize|token)\/?$/i, '')
+      .replace(/\/authorize\/?$/i, '')
+      .replace(/\/+$/, '');
   }
 }
 
