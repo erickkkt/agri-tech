@@ -1,4 +1,4 @@
 {
-    "apiUrl": "",
-    "identityUrl": "https://login.microsoftonline.com/87b5b952-2320-4722-ab5b-402c1fb13b7c/oauth2/v2.0/authorize"
+    "apiUrl": "API_URL",
+    "identityUrl": "AUTH_URL"
 }
