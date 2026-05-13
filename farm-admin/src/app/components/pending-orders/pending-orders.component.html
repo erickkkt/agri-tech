@@ -1,0 +1,64 @@
+<div class="page-pending-orders">
+  <h2>💸 Đơn đầu tư chờ xác nhận</h2>
+
+  <div class="header-actions">
+    <span class="muted">
+      Kiểm tra app ngân hàng, đối soát theo <strong>mã tham chiếu</strong>, sau đó xác nhận để hệ thống phát hành chứng nhận đầu tư.
+    </span>
+    <button mat-stroked-button (click)="load()" [disabled]="loading">
+      <mat-icon>refresh</mat-icon> Làm mới
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading-row">⏳ Đang tải...</div>
+
+  <div *ngIf="!loading && orders.length === 0" class="empty-coming-soon">
+    <span class="emoji">✅</span>
+    <h3>Không có đơn nào chờ xác nhận</h3>
+    <p>Tất cả đơn đầu tư đã được đối soát.</p>
+  </div>
+
+  <table *ngIf="!loading && orders.length > 0" class="pending-table">
+    <thead>
+      <tr>
+        <th>Mã tham chiếu</th>
+        <th>Số tiền</th>
+        <th>Nhà đầu tư</th>
+        <th>Trang trại / Vật nuôi</th>
+        <th>Tài khoản nhận</th>
+        <th>Ngày đặt</th>
+        <th class="actions-col">Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let o of orders">
+        <td class="mono">
+          <strong>{{ o.transferReference }}</strong>
+        </td>
+        <td><strong>{{ fmt(o.totalAmount) }}</strong> VND</td>
+        <td>
+          <div>{{ o.investorUserName || '(ẩn danh)' }}</div>
+          <div class="muted small mono">{{ o.investorUserId | slice:0:8 }}…</div>
+        </td>
+        <td>
+          <div><strong>{{ o.farmName }}</strong></div>
+          <div class="muted small">{{ o.animalName }} ({{ o.animalCode }})</div>
+        </td>
+        <td>
+          <div *ngIf="o.farmBankName">{{ o.farmBankName }}</div>
+          <div *ngIf="o.farmBankAccountNumber" class="mono small">{{ o.farmBankAccountNumber }}</div>
+          <div *ngIf="!o.farmBankAccountNumber" class="muted small">— chưa có TK —</div>
+        </td>
+        <td>{{ o.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+        <td>
+          <button mat-flat-button color="primary"
+                  (click)="confirm(o)"
+                  [disabled]="confirmingId === o.orderId">
+            <mat-icon>check_circle</mat-icon>
+            {{ confirmingId === o.orderId ? 'Đang xử lý...' : 'Xác nhận' }}
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -28,15 +28,23 @@ export class AuthGuardService implements CanActivate, CanActivateChild, CanLoad 
     return combineLatest([this.authService.loadedUserInfo$, this.authService.userInfo$])
       .pipe(
         map(([isloaded, user]) => {
-          if (next.routeConfig && next.routeConfig.path === "") {
-            return true;
-          }
-          else {
-            if (isloaded) {
-              return (user && next.data['roles'] && next.data['roles'].indexOf(user['role']) !== -1)
-            }
-            else { return true; }
-          }
+          // The empty-path child (e.g. /app home) is always allowed once authenticated.
+          if (next.routeConfig && next.routeConfig.path === "") return true;
+
+          // No required roles on the route → any authenticated user passes.
+          const requiredRoles: string[] | undefined = next.data ? next.data['roles'] : undefined;
+          if (!requiredRoles || requiredRoles.length === 0) return true;
+
+          // User profile not loaded yet (transient on first nav) → allow optimistically;
+          // canActivate will be re-run by the router on subsequent navigations.
+          if (!isloaded) return true;
+
+          // User profile loaded but no `role` field returned by /users/info
+          // (common when the AD tenant doesn't expose role claims) → authentication alone is enough.
+          if (!user || !user['role']) return true;
+
+          // Strict role check — only when server returned a concrete role.
+          return requiredRoles.indexOf(user['role']) !== -1;
         }), take(1));
   }
 

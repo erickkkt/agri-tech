@@ -100,6 +100,14 @@ export class ApiEndPoints {
         return `${this.configurationService.apiBaseUrl}/api/${configuration.version}/animals/${animalId}/investment-history`;
     }
 
+    // ----- Investment (admin) -----
+    listPendingOrders() {
+        return `${this.configurationService.apiBaseUrl}/api/${configuration.version}/investment/orders/pending`;
+    }
+    confirmBankTransfer(orderId: string) {
+        return `${this.configurationService.apiBaseUrl}/api/${configuration.version}/investment/orders/${orderId}/confirm-bank-transfer`;
+    }
+
 
     /*********** USERS **************/
     getUserInfo() {

@@ -19,6 +19,7 @@ import { GrowthLogComponent } from './components/growth-log/growth-log.component
 import { AlertsComponent } from './components/alerts/alerts.component';
 import { ReportsComponent } from './components/reports/reports.component';
 import { DiseaseManagementComponent } from './components/disease-management/disease-management.component';
+import { PendingOrdersComponent } from './components/pending-orders/pending-orders.component';
 
 import { Roles } from './models/enum/role.enum';
 
