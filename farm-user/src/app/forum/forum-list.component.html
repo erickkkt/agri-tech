@@ -1,23 +1,72 @@
 <div class="container">
-  <h2>Diễn đàn cộng đồng</h2>
-  <p style="color:#6b7280;">Chia sẻ kinh nghiệm chăn nuôi, kỹ thuật, phòng bệnh.</p>
 
-  <div *ngIf="loading" style="padding:24px;color:#6b7280;">Đang tải...</div>
-  <div *ngIf="error" style="padding:16px;background:#fef2f2;color:#b91c1c;border-radius:6px;">{{ error }}</div>
+  <header class="page-header">
+    <div>
+      <h2>💬 Diễn đàn cộng đồng</h2>
+      <p>Chia sẻ kinh nghiệm chăn nuôi, kỹ thuật, phòng bệnh từ những người nông dân thực thụ.</p>
+    </div>
+    <button>+ Tạo chủ đề</button>
+  </header>
 
-  <div *ngIf="!loading && threads.length === 0 && !error" style="padding:36px;text-align:center;color:#9ca3af;">
-    Chưa có chủ đề nào.
+  <!-- Category filter -->
+  <div class="category-tabs" *ngIf="!loading && threads.length > 0">
+    <button class="category-tab" [class.active]="activeCategory === 'all'" (click)="activeCategory = 'all'">
+      Tất cả <span class="count">{{ threads.length }}</span>
+    </button>
+    <button class="category-tab"
+            *ngFor="let cat of categories"
+            [class.active]="activeCategory === cat"
+            (click)="activeCategory = cat">
+      {{ cat }}
+    </button>
   </div>
 
-  <div class="thread-list">
-    <div class="card thread" *ngFor="let t of threads">
-      <div class="thread-title">{{ t.title }}</div>
-      <div class="thread-meta">
-        <span>{{ t.category }}</span> ·
-        <span>{{ t.authorUserName }}</span> ·
-        <span>{{ t.replyCount }} trả lời</span>
-        <span *ngIf="t.lastReplyAt"> · {{ t.lastReplyAt | date:'short' }}</span>
+  <!-- Error -->
+  <div class="error-banner" *ngIf="error">⚠️ {{ error }}</div>
+
+  <!-- Loading -->
+  <div *ngIf="loading">
+    <div class="thread-row card skeleton-card" *ngFor="let _ of [1,2,3,4]">
+      <div class="skeleton" style="width: 48px; height: 48px; border-radius: 50%;"></div>
+      <div style="flex: 1;">
+        <div class="skeleton" style="height: 18px; width: 60%; margin-bottom: 8px;"></div>
+        <div class="skeleton" style="height: 13px; width: 40%;"></div>
       </div>
     </div>
+  </div>
+
+  <!-- Empty -->
+  <div class="empty-state" *ngIf="!loading && !error && threads.length === 0">
+    <div class="emoji">💬</div>
+    <h3>Chưa có chủ đề nào</h3>
+    <p>Hãy là người đầu tiên đặt câu hỏi hoặc chia sẻ kinh nghiệm!</p>
+    <button>+ Tạo chủ đề đầu tiên</button>
+  </div>
+
+  <!-- Threads list -->
+  <div class="threads-list" *ngIf="!loading && filteredThreads.length > 0">
+    <article class="card hoverable thread-row" *ngFor="let t of filteredThreads">
+      <div class="avatar" [style.background]="avatarColor(t.authorUserName)">
+        {{ initial(t.authorUserName) }}
+      </div>
+      <div class="thread-content">
+        <div class="thread-top">
+          <h3 class="thread-title">{{ t.title }}</h3>
+          <span class="badge" [class]="badgeClass(t.category)" *ngIf="t.category">{{ t.category }}</span>
+        </div>
+        <div class="thread-meta">
+          <span>👤 {{ t.authorUserName || 'Ẩn danh' }}</span>
+          <span>💬 {{ t.replyCount }} trả lời</span>
+          <span *ngIf="t.lastReplyAt">🕒 cập nhật {{ t.lastReplyAt | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+      </div>
+      <div class="thread-arrow">→</div>
+    </article>
+  </div>
+
+  <div class="empty-state" *ngIf="!loading && filteredThreads.length === 0 && threads.length > 0">
+    <div class="emoji">🔍</div>
+    <h3>Không có chủ đề nào trong "{{ activeCategory }}"</h3>
+    <button class="secondary" (click)="activeCategory = 'all'">Xem tất cả</button>
   </div>
 </div>

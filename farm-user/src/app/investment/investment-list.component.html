@@ -1,27 +1,105 @@
-<div class="investment-list" style="padding: 16px;">
-  <h2>Đầu tư vào vật nuôi (Chăn nuôi 4.0)</h2>
-  <p style="color: #666;">
-    Mỗi vật nuôi được chia thành nhiều "share". Mua share để đồng sở hữu vật nuôi cùng trang trại,
-    theo dõi qua nhật ký + camera, và nhận chia lợi nhuận khi khai thác.
-  </p>
+<div class="container">
 
-  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px;">
-    <div *ngFor="let o of offers" style="border: 1px solid #ddd; border-radius: 6px; padding: 16px;">
-      <h3 style="margin: 0 0 8px 0;">{{ o.title }}</h3>
-      <div style="font-size: 0.85rem; color: #666;">{{ o.description }}</div>
-      <div style="margin: 8px 0; padding: 8px; background: #f5f9ff; border-radius: 4px;">
-        <div>Giá / share: <strong>{{ o.pricePerShare | number }}đ</strong></div>
-        <div>Còn lại: <strong>{{ o.availableShares }} / {{ o.totalShares }}</strong> share</div>
-        <div>Tỉ lệ chia LN: <strong>{{ (o.profitRatio * 100) | number:'1.0-2' }}%</strong></div>
-        <div *ngIf="o.expectedHarvestDate">
-          Dự kiến khai thác: {{ o.expectedHarvestDate | date:'yyyy-MM-dd' }}
-        </div>
-      </div>
-      <button (click)="invest(o)" [disabled]="o.availableShares === 0">Đầu tư</button>
+  <header class="page-header">
+    <h2>📈 Đầu tư chăn nuôi 4.0</h2>
+    <p>Sở hữu một phần vật nuôi thật từ trang trại uy tín. Theo dõi qua camera. Nhận chia lợi nhuận khi khai thác.</p>
+  </header>
+
+  <!-- Loading skeleton -->
+  <div class="offers-grid" *ngIf="loading">
+    <div class="card skeleton-card" *ngFor="let _ of [1,2,3]" style="padding: 24px;">
+      <div class="skeleton" style="height: 22px; width: 70%; margin-bottom: 10px;"></div>
+      <div class="skeleton" style="height: 14px; width: 100%; margin-bottom: 18px;"></div>
+      <div class="skeleton" style="height: 8px; width: 100%; margin-bottom: 18px;"></div>
+      <div class="skeleton" style="height: 60px; width: 100%; margin-bottom: 16px;"></div>
+      <div class="skeleton" style="height: 38px; width: 100%;"></div>
     </div>
   </div>
 
-  <div *ngIf="offers.length === 0" style="padding: 36px; text-align: center; color: #888;">
-    Hiện không có offer nào đang mở.
+  <!-- Empty -->
+  <div class="empty-state" *ngIf="!loading && offers.length === 0">
+    <div class="emoji">🐄</div>
+    <h3>Chưa có cơ hội đầu tư nào</h3>
+    <p>Các offer mới sẽ được cập nhật liên tục. Quay lại sau nhé!</p>
+  </div>
+
+  <!-- Offers grid -->
+  <div class="offers-grid" *ngIf="!loading && offers.length > 0">
+    <article class="card hoverable offer-card" *ngFor="let o of offers">
+      <div class="offer-header">
+        <h3 class="offer-title">{{ o.title }}</h3>
+        <div class="profit-badge">💰 +{{ (o.profitRatio * 100) | number:'1.0-2' }}%</div>
+      </div>
+      <p class="offer-desc">{{ o.description }}</p>
+
+      <div class="progress-section">
+        <div class="progress-meta">
+          <span>Đã bán <strong>{{ o.totalShares - o.availableShares }}</strong> / {{ o.totalShares }} share</span>
+          <span><strong>{{ progressPct(o) }}%</strong></span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="progressPct(o)"></div>
+        </div>
+      </div>
+
+      <div class="offer-stats">
+        <div>
+          <div class="stat-label">Giá / share</div>
+          <div class="stat-value price">{{ o.pricePerShare | number }}đ</div>
+        </div>
+        <div>
+          <div class="stat-label">📅 Khai thác</div>
+          <div class="stat-value">
+            {{ o.expectedHarvestDate ? (o.expectedHarvestDate | date:'dd/MM/yyyy') : 'TBD' }}
+          </div>
+        </div>
+      </div>
+
+      <div class="offer-actions">
+        <button (click)="openInvestModal(o)" [disabled]="o.availableShares === 0">
+          {{ o.availableShares === 0 ? 'Đã bán hết' : '🚀 Đầu tư ngay' }}
+        </button>
+      </div>
+    </article>
+  </div>
+</div>
+
+<!-- Invest confirm modal -->
+<div class="modal-backdrop" *ngIf="selectedOffer" (click)="closeModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Xác nhận đầu tư</h3>
+      <p>{{ selectedOffer.title }}</p>
+    </div>
+    <div class="modal-body">
+      <div class="modal-row">
+        <span>Giá / share</span>
+        <span class="modal-row-value"><strong>{{ selectedOffer.pricePerShare | number }}đ</strong></span>
+      </div>
+      <div class="modal-row">
+        <span>Số share còn lại</span>
+        <span class="modal-row-value"><strong>{{ selectedOffer.availableShares }}</strong></span>
+      </div>
+      <div class="modal-row">
+        <span>Tỉ lệ chia lợi nhuận</span>
+        <span class="modal-row-value"><strong>{{ (selectedOffer.profitRatio * 100) | number:'1.0-2' }}%</strong></span>
+      </div>
+
+      <div class="qty-input">
+        <label>Bạn muốn mua bao nhiêu share?</label>
+        <input type="number" min="1" [max]="selectedOffer.availableShares" [(ngModel)]="shareQty" />
+      </div>
+
+      <div class="modal-row total">
+        <span>Tổng cộng</span>
+        <span class="modal-row-value">{{ totalCost | number }}đ</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="ghost" (click)="closeModal()" [disabled]="placingOrder">Huỷ</button>
+      <button (click)="confirmInvest()" [disabled]="placingOrder || shareQty <= 0 || shareQty > selectedOffer.availableShares">
+        {{ placingOrder ? 'Đang xử lý...' : 'Xác nhận đầu tư' }}
+      </button>
+    </div>
   </div>
 </div>

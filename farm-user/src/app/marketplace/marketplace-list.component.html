@@ -1,31 +1,104 @@
-<div class="marketplace-list" style="padding: 16px;">
-  <h2>Sàn giao dịch vật nuôi</h2>
+<div class="container">
 
-  <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
-    <input type="text" placeholder="Từ khóa..." [(ngModel)]="query.q" />
-    <input type="text" placeholder="Tỉnh / Thành" [(ngModel)]="query.province" />
-    <select [(ngModel)]="query.species">
-      <option [ngValue]="undefined">Tất cả loài</option>
-      <option [ngValue]="0">Hươu</option>
-      <option [ngValue]="1">Cừu</option>
-      <option [ngValue]="2">Bò</option>
-    </select>
-    <button (click)="resetAndSearch()">Tìm</button>
+  <header class="page-header">
+    <h2>Sàn giao dịch vật nuôi</h2>
+    <p>Vật nuôi giống, nhung hươu, thịt, trứng đà điểu — kết nối trực tiếp với trang trại.</p>
+  </header>
+
+  <!-- Filter bar -->
+  <div class="filter-bar card">
+    <div class="filter-grid">
+      <div class="field">
+        <label>Tìm kiếm</label>
+        <input type="text" placeholder="Tên vật nuôi, trang trại..." [(ngModel)]="query.q" (keyup.enter)="resetAndSearch()" />
+      </div>
+      <div class="field">
+        <label>Tỉnh / Thành</label>
+        <input type="text" placeholder="VD: Hà Tĩnh, Đồng Nai..." [(ngModel)]="query.province" (keyup.enter)="resetAndSearch()" />
+      </div>
+      <div class="field">
+        <label>Loài</label>
+        <select [(ngModel)]="query.species">
+          <option [ngValue]="undefined">Tất cả loài</option>
+          <option [ngValue]="0">🦌 Hươu</option>
+          <option [ngValue]="1">🐑 Cừu</option>
+          <option [ngValue]="2">🐄 Bò</option>
+          <option [ngValue]="3">🐓 Đà điểu</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Loại sản phẩm</label>
+        <select [(ngModel)]="query.category">
+          <option [ngValue]="undefined">Tất cả loại</option>
+          <option [ngValue]="0">Vật nuôi giống</option>
+          <option [ngValue]="1">Nhung</option>
+          <option [ngValue]="2">Thịt</option>
+          <option [ngValue]="3">Trứng</option>
+        </select>
+      </div>
+    </div>
+    <div class="filter-actions">
+      <button class="ghost" (click)="clearFilters()">Xoá lọc</button>
+      <button (click)="resetAndSearch()">🔍 Tìm kiếm</button>
+    </div>
   </div>
 
-  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px;">
-    <div *ngFor="let l of listings" style="border: 1px solid #ddd; border-radius: 6px; overflow: hidden;">
-      <img *ngIf="l.photoUrls?.length" [src]="l.photoUrls[0]" alt="" style="width: 100%; height: 160px; object-fit: cover;" />
-      <div style="padding: 12px;">
-        <h3 style="margin: 0 0 4px 0;">{{ l.title }}</h3>
-        <div style="color: #666; font-size: 0.85rem;">{{ l.farmName }} - {{ l.province }}</div>
-        <div style="margin-top: 8px; font-weight: 600;">{{ l.price | number }} {{ l.currency }} / {{ l.unit }}</div>
-        <div style="font-size: 0.85rem;">Số lượng: {{ l.quantity }}</div>
+  <!-- Result count -->
+  <div class="result-meta" *ngIf="!loading">
+    <strong>{{ total }}</strong> tin đăng phù hợp
+  </div>
+
+  <!-- Loading skeleton -->
+  <div class="listing-grid" *ngIf="loading">
+    <div class="card skeleton-card" *ngFor="let _ of [1,2,3,4,5,6]">
+      <div class="skeleton" style="height: 180px;"></div>
+      <div style="padding: 14px;">
+        <div class="skeleton" style="height: 18px; width: 70%; margin-bottom: 8px;"></div>
+        <div class="skeleton" style="height: 14px; width: 50%; margin-bottom: 12px;"></div>
+        <div class="skeleton" style="height: 22px; width: 40%;"></div>
       </div>
     </div>
   </div>
 
-  <div *ngIf="listings.length === 0" style="padding: 36px; text-align: center; color: #888;">
-    Không có tin đăng nào phù hợp.
+  <!-- Empty -->
+  <div class="empty-state" *ngIf="!loading && listings.length === 0">
+    <div class="emoji">🌾</div>
+    <h3>Chưa tìm thấy tin đăng nào</h3>
+    <p>Thử bỏ bớt bộ lọc hoặc đổi từ khoá tìm kiếm.</p>
+    <button class="secondary" (click)="clearFilters()">Xoá tất cả lọc</button>
+  </div>
+
+  <!-- Listings grid -->
+  <div class="listing-grid" *ngIf="!loading && listings.length > 0">
+    <article class="card hoverable listing" *ngFor="let l of listings">
+      <div class="listing-image">
+        <img *ngIf="l.photoUrls?.length; else placeholderImg" [src]="l.photoUrls[0]" [alt]="l.title" />
+        <ng-template #placeholderImg>
+          <div class="placeholder">{{ emojiOf(l) }}</div>
+        </ng-template>
+        <div class="listing-badges">
+          <span class="badge success">{{ categoryLabel[l.category] || 'Khác' }}</span>
+        </div>
+      </div>
+      <div class="listing-body">
+        <div class="species-row">
+          <span>{{ emojiOf(l) }}</span>
+          <span class="species-name">{{ speciesOf(l) }}</span>
+        </div>
+        <h3 class="listing-title">{{ l.title }}</h3>
+        <div class="listing-meta">
+          <span>🏡 {{ l.farmName }}</span>
+          <span>📍 {{ l.province }}</span>
+        </div>
+        <div class="listing-footer">
+          <div class="price">
+            <strong>{{ l.price | number }}</strong>
+            <small>{{ l.currency }} / {{ l.unit }}</small>
+          </div>
+          <div class="quantity-pill">Còn {{ l.quantity }}</div>
+        </div>
+        <button class="secondary listing-cta">Xem chi tiết →</button>
+      </div>
+    </article>
   </div>
 </div>

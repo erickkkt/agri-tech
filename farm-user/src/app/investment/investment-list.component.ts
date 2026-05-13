@@ -1,39 +1,78 @@
 import { Component, OnInit } from '@angular/core';
 import { InvestmentService } from '../services/investment.service';
 import { InvestmentOffer } from '../models/investment.model';
+import { AuthService } from '../services/auth.service';
 
-/**
- * Investor portal - browse open investment offers.
- * On click of "Đầu tư", places an order via /api/v1/investment/orders.
- */
 @Component({
   selector: 'app-investment-list',
   templateUrl: './investment-list.component.html',
+  styleUrls: ['./investment-list.component.css'],
   standalone: false
 })
 export class InvestmentListComponent implements OnInit {
   offers: InvestmentOffer[] = [];
+  loading = false;
+  selectedOffer: InvestmentOffer | null = null;
+  shareQty = 1;
+  placingOrder = false;
 
-  constructor(private investmentService: InvestmentService) { }
+  constructor(
+    private readonly investmentService: InvestmentService,
+    private readonly authService: AuthService
+  ) {}
 
   async ngOnInit() {
-    this.offers = (await this.investmentService.getOpenOffers()) ?? [];
+    await this.loadOffers();
   }
 
-  async invest(offer: InvestmentOffer) {
-    const qtyStr = window.prompt(`Bạn muốn mua bao nhiêu share? (còn ${offer.availableShares})`);
-    if (!qtyStr) return;
-    const qty = parseInt(qtyStr, 10);
-    if (!qty || qty <= 0 || qty > offer.availableShares) {
-      window.alert('Số share không hợp lệ');
+  async loadOffers() {
+    this.loading = true;
+    try {
+      this.offers = (await this.investmentService.getOpenOffers()) ?? [];
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  openInvestModal(offer: InvestmentOffer) {
+    if (!this.authService.hasValidToken()) {
+      this.authService.login();
       return;
     }
+    this.selectedOffer = offer;
+    this.shareQty = 1;
+  }
+
+  closeModal() {
+    this.selectedOffer = null;
+  }
+
+  async confirmInvest() {
+    if (!this.selectedOffer) return;
+    const offer = this.selectedOffer;
+    if (this.shareQty <= 0 || this.shareQty > offer.availableShares) return;
+
+    this.placingOrder = true;
     try {
-      await this.investmentService.placeOrder(offer.id, qty);
-      window.alert('Đặt mua thành công!');
-      this.offers = (await this.investmentService.getOpenOffers()) ?? [];
+      await this.investmentService.placeOrder(offer.id, this.shareQty);
+      this.closeModal();
+      await this.loadOffers();
+      // Lightweight success toast via alert; can swap to a real toast later
+      window.alert('🎉 Đặt mua thành công! Cảm ơn bạn đã tham gia.');
     } catch (e: any) {
-      window.alert('Lỗi: ' + (e?.error?.error ?? e?.message ?? 'unknown'));
+      window.alert('Lỗi: ' + (e?.error?.error ?? e?.message ?? 'Vui lòng thử lại'));
+    } finally {
+      this.placingOrder = false;
     }
+  }
+
+  progressPct(o: InvestmentOffer): number {
+    if (!o.totalShares) return 0;
+    return Math.round(((o.totalShares - o.availableShares) / o.totalShares) * 100);
+  }
+
+  get totalCost(): number {
+    if (!this.selectedOffer) return 0;
+    return this.shareQty * this.selectedOffer.pricePerShare;
   }
 }
