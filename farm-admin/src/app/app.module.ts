@@ -82,6 +82,9 @@ import { HomeComponent } from './components/home/home.component';
 import { FarmPopupComponent } from './components/farm-management/farm-popup/farm-popup.component';
 import { CagePopupComponent } from './components/cage-management/cage-popup/cage-popup.component';
 import { AnimalPopupComponent } from './components/animal-management/animal-popup/animal-popup.component';
+import { AnimalDetailComponent } from './components/animal-management/animal-detail/animal-detail.component';
+import { SellAnimalDialogComponent } from './components/animal-management/animal-detail/sell-animal-dialog/sell-animal-dialog.component';
+import { OpenInvestmentDialogComponent } from './components/animal-management/animal-detail/open-investment-dialog/open-investment-dialog.component';
 
 export function storageFactory(): OAuthStorage {
   return sessionStorage;
@@ -122,6 +125,9 @@ const appInitializerFn = (configurationService: ConfigurationService) => {
     FarmPopupComponent,
     CagePopupComponent,
     AnimalPopupComponent,
+    AnimalDetailComponent,
+    SellAnimalDialogComponent,
+    OpenInvestmentDialogComponent,
 
     // Phase 1
     VaccineManagementComponent,

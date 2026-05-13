@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import { MatDialogConfig } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
@@ -38,9 +39,14 @@ export class AnimalManagementComponent implements OnInit, AfterViewInit {
 
   constructor(
     private readonly _AnimalService: AnimalService,
-    private readonly _dialogService: DialogService) {
+    private readonly _dialogService: DialogService,
+    private readonly _router: Router) {
     this.configDialog.disableClose = true;
     this.configDialog.width = '1200px';
+  }
+
+  viewAnimal(animal: Animal) {
+    this._router.navigate(['/app/animals', animal.id]);
   }
 
   async ngOnInit() {

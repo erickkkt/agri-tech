@@ -1,0 +1,153 @@
+<div class="animal-detail">
+
+  <button mat-button class="back-btn" (click)="goBack()">
+    <mat-icon>arrow_back</mat-icon> Quay lại danh sách
+  </button>
+
+  <div *ngIf="loading" class="loading-state">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span>Đang tải...</span>
+  </div>
+
+  <div *ngIf="!loading && notFound" class="empty-state">
+    <h2>Không tìm thấy vật nuôi</h2>
+    <p>Vật nuôi này có thể đã bị xoá hoặc không tồn tại.</p>
+  </div>
+
+  <ng-container *ngIf="!loading && animal">
+
+    <!-- Hero card -->
+    <mat-card class="hero-card">
+      <div class="hero-content">
+        <div class="hero-icon">
+          <span class="emoji">{{ animal.species === 0 ? '🦌' : (animal.species === 1 ? '🐑' : '🐄') }}</span>
+        </div>
+        <div class="hero-info">
+          <div class="hero-meta">
+            <span class="chip">{{ animal.code }}</span>
+            <span class="chip ghost">{{ speciesLabel(animal.species) }}</span>
+            <span class="chip ghost">{{ genderLabel(animal.gender) }}</span>
+            <span class="chip" [ngClass]="{
+              'health-good':  animal.healthStatus === 0,
+              'health-warn':  animal.healthStatus === 1,
+              'health-bad':   animal.healthStatus === 2
+            }">{{ healthLabel(animal.healthStatus) }}</span>
+          </div>
+          <h1>{{ animal.name }}</h1>
+          <p class="hero-desc" *ngIf="animal.description">{{ animal.description }}</p>
+        </div>
+        <div class="hero-actions">
+          <button mat-flat-button color="primary" (click)="openSellDialog()">
+            <mat-icon>sell</mat-icon> Đăng bán
+          </button>
+          <button mat-stroked-button color="primary" (click)="openInvestDialog()">
+            <mat-icon>trending_up</mat-icon> Kêu gọi đầu tư
+          </button>
+        </div>
+      </div>
+    </mat-card>
+
+    <!-- Info grid -->
+    <div class="info-grid">
+      <div class="info-tile">
+        <span class="info-label">Cân nặng</span>
+        <span class="info-value">{{ animal.weight }} <small>kg</small></span>
+      </div>
+      <div class="info-tile">
+        <span class="info-label">Chiều cao</span>
+        <span class="info-value">{{ animal.height }} <small>cm</small></span>
+      </div>
+      <div class="info-tile">
+        <span class="info-label">Ngày sinh</span>
+        <span class="info-value">{{ animal.dateOfBirth | date:'dd/MM/yyyy' }}</span>
+      </div>
+      <div class="info-tile">
+        <span class="info-label">Ngày nhập trại</span>
+        <span class="info-value">{{ animal.dateOfArrival | date:'dd/MM/yyyy' }}</span>
+      </div>
+      <div class="info-tile">
+        <span class="info-label">Chuồng</span>
+        <span class="info-value">{{ animal.cageName || '—' }}</span>
+      </div>
+      <div class="info-tile">
+        <span class="info-label">Trang trại</span>
+        <span class="info-value">{{ animal.farmName || '—' }}</span>
+      </div>
+    </div>
+
+    <!-- Sales history -->
+    <mat-card class="history-card">
+      <mat-card-header>
+        <mat-card-title>📦 Lịch sử đăng bán</mat-card-title>
+        <mat-card-subtitle>Các tin đăng marketplace tạo cho vật nuôi này</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div *ngIf="salesHistory.length === 0" class="empty-row">Chưa có tin đăng nào.</div>
+        <table *ngIf="salesHistory.length > 0" class="history-table">
+          <thead>
+            <tr>
+              <th>Tin đăng</th>
+              <th>Loại</th>
+              <th>Giá</th>
+              <th>SL</th>
+              <th>Trạng thái</th>
+              <th>Ngày tạo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let s of salesHistory">
+              <td>{{ s.title }}</td>
+              <td>{{ categoryLabel(s.category) }}</td>
+              <td><strong>{{ s.price | number }}</strong> {{ s.currency }}</td>
+              <td>{{ s.quantity }} {{ s.unit }}</td>
+              <td>
+                <span class="status-chip" [ngClass]="'status-' + s.status">
+                  {{ LISTING_STATUS[s.status] || s.status }}
+                </span>
+              </td>
+              <td>{{ s.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Investment history -->
+    <mat-card class="history-card">
+      <mat-card-header>
+        <mat-card-title>📈 Lịch sử kêu gọi đầu tư</mat-card-title>
+        <mat-card-subtitle>Các investment offer đã mở cho vật nuôi này</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div *ngIf="investmentHistory.length === 0" class="empty-row">Chưa có offer nào.</div>
+        <table *ngIf="investmentHistory.length > 0" class="history-table">
+          <thead>
+            <tr>
+              <th>Offer</th>
+              <th>Share đã bán</th>
+              <th>Giá / share</th>
+              <th>% LN nhà đầu tư</th>
+              <th>Khai thác</th>
+              <th>Trạng thái</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let o of investmentHistory">
+              <td>{{ o.title }}</td>
+              <td>{{ o.totalShares - o.availableShares }} / {{ o.totalShares }}</td>
+              <td><strong>{{ o.pricePerShare | number }}</strong>đ</td>
+              <td>{{ (o.profitRatio * 100) | number:'1.0-2' }}%</td>
+              <td>{{ o.expectedHarvestDate ? (o.expectedHarvestDate | date:'dd/MM/yyyy') : '—' }}</td>
+              <td>
+                <span class="status-chip" [ngClass]="'status-' + o.status">
+                  {{ OFFER_STATUS[o.status] || o.status }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </mat-card-content>
+    </mat-card>
+
+  </ng-container>
+</div>

@@ -83,6 +83,23 @@ export class ApiEndPoints {
         return `${this.configurationService.apiBaseUrl}/api/${configuration.version}/animals/${animalId}`;
     }
 
+    // ----- Animal: sell & invest -----
+    getAnimalPriceSuggestion(animalId: string) {
+        return `${this.configurationService.apiBaseUrl}/api/${configuration.version}/animals/${animalId}/price-suggestion`;
+    }
+    listAnimalForSale(animalId: string) {
+        return `${this.configurationService.apiBaseUrl}/api/${configuration.version}/animals/${animalId}/list-for-sale`;
+    }
+    openAnimalInvestment(animalId: string) {
+        return `${this.configurationService.apiBaseUrl}/api/${configuration.version}/animals/${animalId}/open-investment`;
+    }
+    getAnimalSalesHistory(animalId: string) {
+        return `${this.configurationService.apiBaseUrl}/api/${configuration.version}/animals/${animalId}/sales-history`;
+    }
+    getAnimalInvestmentHistory(animalId: string) {
+        return `${this.configurationService.apiBaseUrl}/api/${configuration.version}/animals/${animalId}/investment-history`;
+    }
+
 
     /*********** USERS **************/
     getUserInfo() {

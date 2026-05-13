@@ -83,6 +83,13 @@ namespace Farm.Domain.FarmDbContexts
                 .HasIndex(l => new { l.Province, l.Species, l.Status });
             modelBuilder.Entity<Listing>()
                 .HasIndex(l => l.FarmId);
+            modelBuilder.Entity<Listing>()
+                .HasIndex(l => l.AnimalId);
+            modelBuilder.Entity<Listing>()
+                .HasOne(l => l.Animal)
+                .WithMany()
+                .HasForeignKey(l => l.AnimalId)
+                .OnDelete(DeleteBehavior.SetNull);
             modelBuilder.Entity<ForumThread>()
                 .HasIndex(t => new { t.Category, t.LastReplyAt });
             modelBuilder.Entity<ForumPost>()

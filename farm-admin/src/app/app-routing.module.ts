@@ -8,6 +8,7 @@ import { ErrorHandlerComponent } from './shared/error-handler/error-handler.comp
 import { UserManagementComponent } from './components/user-management/user-management.component';
 import { AccessDeniedComponent } from './shared/components/access-denied/access-denied.component';
 import { AnimalManagementComponent } from './components/animal-management/animal-management.component';
+import { AnimalDetailComponent } from './components/animal-management/animal-detail/animal-detail.component';
 import { FarmManagementComponent } from './components/farm-management/farm-management.component';
 import { CageManagementComponent } from './components/cage-management/cage-management.component';
 
@@ -41,7 +42,15 @@ const routes: Routes = [
         canLoad: [AuthGuardService],
         canActivate: [AuthGuardService],
         canActivateChild: [AuthGuardService],
-        component: AnimalManagementComponent 
+        component: AnimalManagementComponent
+      },
+      {
+        path: 'animals/:id',
+        data: { roles: [Roles.HOSYSADMIN] },
+        canLoad: [AuthGuardService],
+        canActivate: [AuthGuardService],
+        canActivateChild: [AuthGuardService],
+        component: AnimalDetailComponent
       },
       {
         path: 'farms',

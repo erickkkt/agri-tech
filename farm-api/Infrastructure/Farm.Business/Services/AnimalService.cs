@@ -64,7 +64,12 @@ namespace Farm.Business.Services
 
         public async Task<Animal> GetAnimal(Guid AnimalId)
         {
-            return await _animalRepository.GetAsync(x=> x.Id == AnimalId);
+            // Include Cage → Farm so callers (e.g. ListForSale) can read animal.Cage.FarmId
+            return await _animalRepository.QueryAll()
+                .Include(x => x.Cage)
+                .ThenInclude(c => c.Farm)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == AnimalId);
         }
 
         public async Task<Animal> UpdateAnimal(Animal Animal)

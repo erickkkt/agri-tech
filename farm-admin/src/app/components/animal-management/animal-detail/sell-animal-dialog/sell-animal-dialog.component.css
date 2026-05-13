@@ -1,0 +1,48 @@
+.sell-dialog { min-width: 480px; }
+
+.animal-summary {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: #f9fafb;
+  border-radius: 10px;
+  margin-bottom: 14px;
+}
+.animal-summary .emoji { font-size: 2.5rem; }
+.animal-summary .code { color: #6b7280; font-size: 0.85rem; }
+.animal-summary .muted { color: #6b7280; font-size: 0.85rem; }
+
+.suggestion-banner {
+  padding: 10px 14px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 8px;
+  color: #065f46;
+  font-size: 0.9rem;
+  margin-bottom: 14px;
+}
+.suggestion-banner small { color: #047857; margin-left: 6px; }
+
+.full-width { width: 100%; }
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+.form-row mat-form-field { width: 100%; }
+
+.error-banner {
+  padding: 10px 14px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #991b1b;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 600px) {
+  .sell-dialog { min-width: 0; }
+  .form-row { grid-template-columns: 1fr; }
+}

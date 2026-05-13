@@ -21,6 +21,15 @@ namespace Farm.Domain.Entities
 
         public Guid SellerUserId { get; set; }
 
+        /// <summary>
+        /// Optional link back to the specific Animal being sold. Nullable because not every
+        /// listing maps to one animal (e.g. bulk eggs, antler harvest from multiple deer).
+        /// Populated when a listing is created via Animal.SellAnimal endpoint.
+        /// </summary>
+        public Guid? AnimalId { get; set; }
+        [ForeignKey("AnimalId")]
+        public virtual Animal Animal { get; set; }
+
         [Required, StringLength(250)]
         public string Title { get; set; }
 
