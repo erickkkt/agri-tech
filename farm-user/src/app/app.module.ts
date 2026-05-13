@@ -9,6 +9,7 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { MarketplaceListComponent } from './marketplace/marketplace-list.component';
 import { InvestmentListComponent } from './investment/investment-list.component';
+import { InvestmentCommitmentComponent } from './investment/commitment/investment-commitment.component';
 import { ForumListComponent } from './forum/forum-list.component';
 
 import { ConfigurationService } from './services/configuration.service';
@@ -39,6 +40,7 @@ const appInitializerFn = (configurationService: ConfigurationService) => {
     HomeComponent,
     MarketplaceListComponent,
     InvestmentListComponent,
+    InvestmentCommitmentComponent,
     ForumListComponent
   ],
   imports: [

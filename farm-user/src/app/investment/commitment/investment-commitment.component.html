@@ -1,0 +1,182 @@
+<div class="container commitment-page">
+
+  <a routerLink="/investments" class="back-link no-print">← Quay lại danh sách đầu tư</a>
+
+  <div *ngIf="loading" class="loading-state">⏳ Đang tải cam kết...</div>
+  <div *ngIf="error" class="error-state">⚠️ {{ error }}</div>
+
+  <ng-container *ngIf="commitment">
+
+    <!-- Success banner -->
+    <div class="success-banner no-print">
+      <div class="success-icon">🎉</div>
+      <div>
+        <h2>Đặt đầu tư thành công!</h2>
+        <p>Chuyển khoản theo hướng dẫn bên dưới để hoàn tất đầu tư vào vật nuôi.</p>
+      </div>
+    </div>
+
+    <!-- Step 1: Bank transfer instructions -->
+    <section class="card bank-card">
+      <div class="card-header">
+        <div class="step-num">1</div>
+        <div>
+          <h3>Chuyển khoản đến tài khoản trang trại</h3>
+          <p>Sử dụng đúng nội dung chuyển khoản bên dưới để hệ thống tự đối soát.</p>
+        </div>
+      </div>
+
+      <div *ngIf="!commitment.farm.bankAccountNumber" class="warning-banner">
+        ⚠️ Trang trại <strong>{{ commitment.farm.name }}</strong> chưa cập nhật thông tin tài khoản ngân hàng.
+        Vui lòng liên hệ trực tiếp chủ trang trại: <strong>{{ commitment.farm.ownerName || '(không có thông tin)' }}</strong>.
+      </div>
+
+      <div *ngIf="commitment.farm.bankAccountNumber" class="bank-grid">
+        <div class="bank-row">
+          <span class="bank-label">Ngân hàng</span>
+          <span class="bank-value">{{ commitment.farm.bankName || '—' }}</span>
+        </div>
+        <div class="bank-row">
+          <span class="bank-label">Chi nhánh</span>
+          <span class="bank-value">{{ commitment.farm.bankBranch || '—' }}</span>
+        </div>
+        <div class="bank-row highlight">
+          <span class="bank-label">Số tài khoản</span>
+          <span class="bank-value mono">
+            {{ commitment.farm.bankAccountNumber }}
+            <button class="copy-btn no-print" (click)="copy(commitment.farm.bankAccountNumber, 'acct')">
+              {{ copied === 'acct' ? '✓ Đã copy' : '📋 Copy' }}
+            </button>
+          </span>
+        </div>
+        <div class="bank-row">
+          <span class="bank-label">Chủ tài khoản</span>
+          <span class="bank-value">{{ commitment.farm.bankAccountHolder || commitment.farm.ownerName }}</span>
+        </div>
+        <div class="bank-row highlight">
+          <span class="bank-label">Số tiền</span>
+          <span class="bank-value money">
+            {{ commitment.totalAmount | number }} {{ commitment.currency }}
+          </span>
+        </div>
+        <div class="bank-row highlight">
+          <span class="bank-label">Nội dung chuyển khoản</span>
+          <span class="bank-value mono">
+            {{ transferNote }}
+            <button class="copy-btn no-print" (click)="copy(transferNote, 'note')">
+              {{ copied === 'note' ? '✓ Đã copy' : '📋 Copy' }}
+            </button>
+          </span>
+        </div>
+      </div>
+
+      <div class="ref-banner">
+        💡 Mã tham chiếu của đơn đầu tư:
+        <strong class="mono">{{ commitment.transferReference }}</strong>
+        — chủ trang trại sẽ dùng mã này để xác nhận khi nhận được tiền.
+      </div>
+    </section>
+
+    <!-- Step 2: Commitment document (printable) -->
+    <section class="card commitment-card">
+      <div class="card-header">
+        <div class="step-num">2</div>
+        <div>
+          <h3>Bản cam kết đầu tư</h3>
+          <p>Hợp đồng số giữa nhà đầu tư và chủ trang trại. Có thể in để lưu hồ sơ.</p>
+        </div>
+        <button class="ghost no-print" (click)="print()">🖨 In tài liệu</button>
+      </div>
+
+      <div class="contract">
+        <h1 class="contract-title">BẢN CAM KẾT ĐẦU TƯ VẬT NUÔI</h1>
+        <p class="contract-subtitle">
+          Mã đơn: <strong class="mono">{{ commitment.transferReference }}</strong>
+          &nbsp;·&nbsp; Lập ngày {{ commitment.createdAt | date:'dd/MM/yyyy HH:mm' }}
+        </p>
+
+        <p class="contract-intro">
+          Hôm nay, ngày <strong>{{ commitment.createdAt | date:'dd' }}</strong>
+          tháng <strong>{{ commitment.createdAt | date:'MM' }}</strong>
+          năm <strong>{{ commitment.createdAt | date:'yyyy' }}</strong>,
+          các bên dưới đây cùng đồng ý xác lập cam kết đầu tư với nội dung như sau:
+        </p>
+
+        <div class="parties">
+          <div class="party">
+            <h4>BÊN A — Chủ trang trại</h4>
+            <div><strong>Trang trại:</strong> {{ commitment.farm.name }}</div>
+            <div><strong>Chủ trang trại:</strong> {{ commitment.farm.ownerName || '—' }}</div>
+            <div><strong>Địa chỉ:</strong> {{ commitment.farm.location || '—' }}</div>
+          </div>
+          <div class="party">
+            <h4>BÊN B — Nhà đầu tư</h4>
+            <div><strong>Họ tên:</strong> {{ commitment.investor.name }}</div>
+            <div><strong>Mã định danh:</strong> <span class="mono">{{ commitment.investor.userId }}</span></div>
+          </div>
+        </div>
+
+        <h4 class="contract-section">ĐIỀU 1. ĐỐI TƯỢNG ĐẦU TƯ</h4>
+        <p>
+          Bên B đồng ý đầu tư vào vật nuôi cụ thể tại trang trại của Bên A, với thông tin như sau:
+        </p>
+        <table class="contract-table">
+          <tr><th>Mã định danh</th><td class="mono">{{ commitment.animal.code }}</td></tr>
+          <tr><th>Tên vật nuôi</th><td>{{ commitment.animal.name }}</td></tr>
+          <tr><th>Loài</th><td>{{ commitment.animal.species }}</td></tr>
+          <tr><th>Cân nặng hiện tại</th><td>{{ commitment.animal.weight }} kg</td></tr>
+          <tr *ngIf="commitment.animal.dateOfBirth"><th>Ngày sinh</th><td>{{ commitment.animal.dateOfBirth | date:'dd/MM/yyyy' }}</td></tr>
+        </table>
+
+        <h4 class="contract-section">ĐIỀU 2. MỨC ĐẦU TƯ &amp; LỢI NHUẬN</h4>
+        <ul class="contract-list">
+          <li>Mức đầu tư: <strong>{{ commitment.totalAmount | number }} {{ commitment.currency }}</strong>.</li>
+          <li>Hình thức thanh toán: chuyển khoản đến tài khoản ngân hàng của Bên A (xem mục Chuyển khoản).</li>
+          <li>Tỷ lệ chia lợi nhuận khi khai thác: Bên B nhận <strong>{{ (commitment.profitRatio * 100) | number:'1.0-2' }}%</strong> doanh thu khai thác (sau khi trừ chi phí).</li>
+          <li *ngIf="commitment.expectedHarvestDate">Dự kiến khai thác: <strong>{{ commitment.expectedHarvestDate | date:'dd/MM/yyyy' }}</strong>.</li>
+        </ul>
+
+        <h4 class="contract-section">ĐIỀU 3. QUYỀN &amp; NGHĨA VỤ CỦA BÊN A (TRANG TRẠI)</h4>
+        <ul class="contract-list">
+          <li>Chăm sóc, nuôi dưỡng vật nuôi theo tiêu chuẩn đã công bố.</li>
+          <li>Cung cấp nhật ký phát triển (cân nặng, sức khỏe, tiêm vaccine) định kỳ qua hệ thống Agri-Tech.</li>
+          <li>Cho phép Bên B truy cập camera chuồng trại (nếu có) để theo dõi vật nuôi.</li>
+          <li>Khi khai thác, thực hiện chia lợi nhuận đúng tỷ lệ cam kết và đúng thời hạn.</li>
+        </ul>
+
+        <h4 class="contract-section">ĐIỀU 4. QUYỀN &amp; NGHĨA VỤ CỦA BÊN B (NHÀ ĐẦU TƯ)</h4>
+        <ul class="contract-list">
+          <li>Chuyển khoản đầy đủ mức đầu tư đã cam kết trong vòng 48 giờ kể từ thời điểm lập cam kết này.</li>
+          <li>Không can thiệp vào hoạt động vận hành hằng ngày của trang trại.</li>
+          <li>Có quyền yêu cầu Bên A báo cáo tình trạng vật nuôi bất kỳ lúc nào.</li>
+        </ul>
+
+        <h4 class="contract-section">ĐIỀU 5. RỦI RO</h4>
+        <p>
+          Bên B hiểu rằng đầu tư chăn nuôi có rủi ro do điều kiện tự nhiên (bệnh dịch, thiên tai, biến động giá thị trường).
+          Hệ thống Agri-Tech ghi nhận và hỗ trợ giám sát, nhưng không bảo lãnh lợi nhuận tối thiểu.
+        </p>
+
+        <h4 class="contract-section">ĐIỀU 6. HIỆU LỰC</h4>
+        <p>
+          Cam kết này có hiệu lực kể từ thời điểm Bên A xác nhận đã nhận được tiền chuyển khoản từ Bên B.
+          Mọi tranh chấp được giải quyết thông qua thương lượng; nếu không đạt được thoả thuận, sẽ được giải quyết theo pháp luật hiện hành.
+        </p>
+
+        <div class="signatures">
+          <div class="signature">
+            <strong>BÊN A — CHỦ TRANG TRẠI</strong>
+            <span class="sig-line"></span>
+            <small>{{ commitment.farm.ownerName || '(Ký, ghi rõ họ tên)' }}</small>
+          </div>
+          <div class="signature">
+            <strong>BÊN B — NHÀ ĐẦU TƯ</strong>
+            <span class="sig-line"></span>
+            <small>{{ commitment.investor.name }}</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </ng-container>
+</div>

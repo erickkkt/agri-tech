@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { InvestmentService } from '../services/investment.service';
 import { InvestmentOffer } from '../models/investment.model';
 import { AuthService } from '../services/auth.service';
@@ -17,7 +18,8 @@ export class InvestmentListComponent implements OnInit {
 
   constructor(
     private readonly investmentService: InvestmentService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly router: Router
   ) {}
 
   async ngOnInit() {
@@ -65,10 +67,14 @@ export class InvestmentListComponent implements OnInit {
     try {
       // Single-animal investment: buy ALL available shares so the entire offer
       // is committed to this one investor.
-      await this.investmentService.placeOrder(offer.id, offer.availableShares);
+      const orderId = await this.investmentService.placeOrder(offer.id, offer.availableShares);
       this.closeModal();
-      await this.loadOffers();
-      window.alert('🎉 Đặt đầu tư thành công! Cảm ơn bạn đã tham gia.');
+      if (orderId) {
+        // Redirect to commitment page with bank transfer instructions + contract.
+        await this.router.navigate(['/investments/orders', orderId, 'commitment']);
+      } else {
+        await this.loadOffers();
+      }
     } catch (e: any) {
       window.alert('Lỗi: ' + (e?.error?.error ?? e?.message ?? 'Vui lòng thử lại'));
     } finally {

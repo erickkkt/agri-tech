@@ -48,7 +48,11 @@ export class FarmPopupComponent implements OnInit {
       description: [''],
       ownerName: ['',[Validators.required]],
       status: [Status.Active, [Validators.required]],
-      location: ['']
+      location: [''],
+      bankName: [''],
+      bankAccountNumber: [''],
+      bankAccountHolder: [''],
+      bankBranch: ['']
     });
   }
 
@@ -72,6 +76,11 @@ export class FarmPopupComponent implements OnInit {
     return this.form.get('location') as AbstractControl;
   }
 
+  get bankName()         { return this.form.get('bankName') as AbstractControl; }
+  get bankAccountNumber(){ return this.form.get('bankAccountNumber') as AbstractControl; }
+  get bankAccountHolder(){ return this.form.get('bankAccountHolder') as AbstractControl; }
+  get bankBranch()       { return this.form.get('bankBranch') as AbstractControl; }
+
   initDataForUpdate(farm: Farm) {
     if (farm) {
       this.name.setValue(farm.name);
@@ -79,6 +88,10 @@ export class FarmPopupComponent implements OnInit {
       this.ownerName.setValue(farm.ownerName);
       this.status.setValue(farm.isActive ? Status.Active : Status.Inactive);
       this.location.setValue(farm.location);
+      this.bankName.setValue(farm.bankName || '');
+      this.bankAccountNumber.setValue(farm.bankAccountNumber || '');
+      this.bankAccountHolder.setValue(farm.bankAccountHolder || '');
+      this.bankBranch.setValue(farm.bankBranch || '');
     }
   }
 
@@ -95,7 +108,11 @@ export class FarmPopupComponent implements OnInit {
         isActive: this.status.value == 'Active' ? true : false,
         description: this.description.value,
         ownerName: this.ownerName.value,
-        location: this.location.value
+        location: this.location.value,
+        bankName: this.bankName.value || undefined,
+        bankAccountNumber: this.bankAccountNumber.value || undefined,
+        bankAccountHolder: this.bankAccountHolder.value || undefined,
+        bankBranch: this.bankBranch.value || undefined
       };
 
       if (!this.updateMode) {

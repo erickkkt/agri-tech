@@ -71,6 +71,17 @@ namespace Farm.Domain.Entities
 
         public InvestmentOrderStatus Status { get; set; }
 
+        /// <summary>
+        /// Short human-readable reference shown to investor for offline bank transfer
+        /// (e.g. "AGRI-7E3B9C2A"). Investor copies this into the bank transfer note,
+        /// admin uses it to reconcile incoming wire with the order.
+        /// </summary>
+        [StringLength(50)]
+        public string TransferReference { get; set; }
+
+        /// <summary>Set when admin verifies the bank wire has landed.</summary>
+        public DateTime? BankTransferConfirmedAt { get; set; }
+
         public DateTime CreatedAt { get; set; }
         public DateTime? ConfirmedAt { get; set; }
         public Guid? ChangedByUserId { get; set; }

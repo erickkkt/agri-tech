@@ -30,4 +30,34 @@ export class InvestmentService {
   getAnimalUpdates(animalId: string, take = 50): Promise<AnimalUpdate[] | undefined> {
     return this.http.getDataAsync<AnimalUpdate[]>(this.api.getAnimalUpdates(animalId), { take });
   }
+
+  getCommitment(orderId: string): Promise<CommitmentDto | undefined> {
+    return this.http.getDataAsync<CommitmentDto>(this.api.getInvestmentCommitment(orderId));
+  }
+}
+
+// ---------- Commitment ----------
+
+export interface CommitmentDto {
+  orderId: string;
+  createdAt: string;
+  status: string;
+  transferReference: string;
+  bankTransferConfirmedAt?: string;
+
+  totalAmount: number;
+  currency: string;
+  profitRatio: number;
+  expectedHarvestDate?: string;
+  offerTitle: string;
+  offerDescription: string;
+
+  investor: { userId: string; name: string };
+  farm: {
+    id: string; name: string; ownerName: string; location: string;
+    bankName: string; bankAccountNumber: string; bankAccountHolder: string; bankBranch: string;
+  };
+  animal: {
+    id: string; code: string; name: string; species: string; weight: number; dateOfBirth?: string;
+  };
 }

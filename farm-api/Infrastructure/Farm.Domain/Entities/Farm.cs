@@ -22,6 +22,13 @@ namespace Farm.Domain.Entities
         [StringLength(4000)]
         public string Location { get; set; }
 
+        // Bank account info — receiving account for marketplace sales and
+        // investor transfers. Nullable because legacy farms may not have it set.
+        [StringLength(120)] public string BankName { get; set; }
+        [StringLength(50)]  public string BankAccountNumber { get; set; }
+        [StringLength(250)] public string BankAccountHolder { get; set; }
+        [StringLength(120)] public string BankBranch { get; set; }
+
         public DateTime CreatedAt { get; set; }
         public bool IsActive { get; set; }
         

@@ -50,6 +50,8 @@ namespace Farm.Business.Services
             order.TotalAmount = offer.PricePerShare * order.ShareQty;
             order.Status = InvestmentOrderStatus.Pending;
             order.CreatedAt = DateTime.UtcNow;
+            // Short reference investor will copy into the bank transfer note
+            order.TransferReference = $"AGRI-{Guid.NewGuid().ToString("N").Substring(0, 8).ToUpperInvariant()}";
             offer.AvailableShares -= order.ShareQty;
             if (offer.AvailableShares == 0) offer.Status = InvestmentOfferStatus.Closed;
 

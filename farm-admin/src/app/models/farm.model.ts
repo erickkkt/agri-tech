@@ -5,4 +5,9 @@ export interface Farm {
     description: string;
     isActive: boolean;
     ownerName: string;
+    // Bank info — receiving account for marketplace sales + investor transfers
+    bankName?: string;
+    bankAccountNumber?: string;
+    bankAccountHolder?: string;
+    bankBranch?: string;
 }

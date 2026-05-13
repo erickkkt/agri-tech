@@ -1,0 +1,227 @@
+.commitment-page { padding-bottom: 60px; }
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 14px;
+  color: var(--gray-600);
+  font-size: 0.9rem;
+}
+
+.loading-state, .error-state {
+  padding: 60px;
+  text-align: center;
+  color: var(--gray-500);
+}
+.error-state { color: var(--danger); }
+
+/* ----- Success banner ----- */
+.success-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 22px 26px;
+  background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+  color: white;
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-lg);
+}
+.success-icon { font-size: 2.5rem; }
+.success-banner h2 { color: white; margin: 0 0 4px; font-size: 1.4rem; }
+.success-banner p { color: rgba(255,255,255,0.9); margin: 0; }
+
+/* ----- Card shell ----- */
+.card { padding: 24px; margin-bottom: 20px; }
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.card-header h3 { margin: 0 0 4px; font-size: 1.15rem; }
+.card-header p { margin: 0; color: var(--gray-600); font-size: 0.88rem; }
+.step-num {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+  color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ----- Bank card ----- */
+.bank-grid {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.bank-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  gap: 12px;
+  border-bottom: 1px solid var(--gray-100);
+  font-size: 0.92rem;
+}
+.bank-row:last-child { border-bottom: none; }
+.bank-row.highlight { background: var(--brand-50); }
+.bank-label {
+  color: var(--gray-600);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+  min-width: 160px;
+}
+.bank-value {
+  color: var(--gray-900);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-align: right;
+}
+.bank-value.money { color: var(--brand-700); font-size: 1.15rem; }
+.mono { font-family: 'Courier New', Menlo, Monaco, monospace; }
+.copy-btn {
+  font-size: 0.78rem;
+  padding: 4px 10px;
+  background: white;
+  color: var(--brand-700);
+  border: 1px solid var(--brand-300);
+}
+.copy-btn:hover:not(:disabled) {
+  background: var(--brand-50);
+  border-color: var(--brand-500);
+  transform: none;
+  box-shadow: none;
+}
+
+.ref-banner {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: #eff6ff;
+  border-left: 3px solid var(--info);
+  border-radius: 6px;
+  font-size: 0.88rem;
+  color: var(--gray-700);
+}
+
+.warning-banner {
+  padding: 14px 18px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  border-radius: var(--radius);
+  font-size: 0.92rem;
+}
+
+/* ----- Contract ----- */
+.contract {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px 36px;
+  font-family: 'Times New Roman', Georgia, serif;
+  color: var(--gray-900);
+  line-height: 1.65;
+}
+.contract-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+  letter-spacing: 0.02em;
+}
+.contract-subtitle {
+  text-align: center;
+  color: var(--gray-600);
+  font-size: 0.9rem;
+  margin: 0 0 24px;
+}
+.contract-intro { margin: 0 0 18px; }
+
+.contract-section {
+  margin: 22px 0 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  letter-spacing: 0.02em;
+}
+
+.parties {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin: 14px 0 24px;
+}
+.party {
+  background: var(--gray-50);
+  border-left: 3px solid var(--brand-500);
+  border-radius: 6px;
+  padding: 14px 18px;
+}
+.party h4 {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  color: var(--brand-700);
+  font-weight: 700;
+}
+.party div { margin-bottom: 4px; font-size: 0.92rem; }
+
+.contract-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0 16px;
+}
+.contract-table th, .contract-table td {
+  padding: 8px 12px;
+  text-align: left;
+  font-size: 0.92rem;
+  border-bottom: 1px solid var(--gray-100);
+}
+.contract-table th { color: var(--gray-600); font-weight: 600; width: 35%; }
+
+.contract-list { padding-left: 22px; margin: 8px 0 16px; }
+.contract-list li { margin-bottom: 6px; font-size: 0.92rem; }
+
+.signatures {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-top: 60px;
+}
+.signature {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+}
+.signature strong { font-size: 0.95rem; }
+.signature small { color: var(--gray-700); font-size: 0.9rem; font-style: italic; }
+.sig-line {
+  display: block;
+  border-bottom: 1px solid var(--gray-400);
+  margin: 0 20px;
+}
+
+/* ----- Print ----- */
+@media print {
+  .no-print { display: none !important; }
+  .topbar, .footer { display: none !important; }
+  body { background: white; }
+  .card { border: none; box-shadow: none; padding: 0; margin-bottom: 24px; }
+  .commitment-page { padding: 0; }
+  .contract { border: none; padding: 0; }
+}
+
+@media (max-width: 700px) {
+  .bank-row { flex-direction: column; align-items: flex-start; }
+  .bank-label { min-width: 0; }
+  .bank-value { text-align: left; }
+  .parties { grid-template-columns: 1fr; }
+  .signatures { grid-template-columns: 1fr; gap: 40px; }
+}

@@ -30,6 +30,8 @@ export class ApiEndPoints {
   placeInvestmentOrder() { return `${this.base}/investment/orders`; }
   getMyInvestmentOrders() { return `${this.base}/investment/orders/me`; }
   getAnimalUpdates(animalId: string) { return `${this.base}/investment/animal-updates/${animalId}`; }
+  getInvestmentOrder(orderId: string) { return `${this.base}/investment/orders/${orderId}`; }
+  getInvestmentCommitment(orderId: string) { return `${this.base}/investment/orders/${orderId}/commitment`; }
 
   /*********** FORUM ***********/
   getForumThreads() { return `${this.base}/forum/threads`; }

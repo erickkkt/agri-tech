@@ -45,6 +45,35 @@
                 </mat-form-field>
             </section>
 
+            <!-- Bank info: receiving account for marketplace sales + investor transfers -->
+            <h4 class="section-heading">🏦 Tài khoản ngân hàng nhận tiền đầu tư</h4>
+            <p class="section-hint">
+                Khi nhà đầu tư đặt đơn trên webuser, hệ thống sẽ hiển thị thông tin tài khoản này để chuyển khoản.
+                Có thể để trống và cập nhật sau.
+            </p>
+
+            <section class="display-flex flex-direction-row">
+                <mat-form-field>
+                    <mat-label>Tên ngân hàng</mat-label>
+                    <input matInput placeholder="VD: Vietcombank" formControlName="bankName" maxlength="120">
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Chi nhánh</mat-label>
+                    <input matInput placeholder="VD: Hà Nội" formControlName="bankBranch" maxlength="120">
+                </mat-form-field>
+            </section>
+
+            <section class="display-flex flex-direction-row">
+                <mat-form-field>
+                    <mat-label>Số tài khoản</mat-label>
+                    <input matInput placeholder="VD: 0123456789" formControlName="bankAccountNumber" maxlength="50">
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Chủ tài khoản</mat-label>
+                    <input matInput placeholder="Tên đầy đủ trên TK" formControlName="bankAccountHolder" maxlength="250">
+                </mat-form-field>
+            </section>
+
         </form>
     </mat-dialog-content>
 

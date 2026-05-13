@@ -1,7 +1,9 @@
 using Farm.Business.Services.Interfaces;
 using Farm.Domain.Entities;
+using Farm.Domain.FarmDbContexts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Farm.Api.Controllers
 {
@@ -13,10 +15,12 @@ namespace Farm.Api.Controllers
     public class InvestmentController : FarmBaseController
     {
         private readonly IInvestmentService _service;
+        private readonly FarmDbContext _db;
 
-        public InvestmentController(IInvestmentService service, IUserService userService) : base(userService)
+        public InvestmentController(IInvestmentService service, IUserService userService, FarmDbContext db) : base(userService)
         {
             _service = service;
+            _db = db;
         }
 
         // ---------- Offers ----------
@@ -99,6 +103,114 @@ namespace Farm.Api.Controllers
             catch (KeyNotFoundException) { return NotFound(); }
         }
 
+        // ---------- Commitment / bank transfer ----------
+
+        /// <summary>Single order detail (owner only).</summary>
+        [HttpGet("orders/{id:guid}")]
+        public async Task<ActionResult<InvestmentOrder>> GetOrder(Guid id)
+        {
+            var user = await AuthorizedUser;
+            if (user == null) return Unauthorized();
+
+            var order = await _db.InvestmentOrders.AsNoTracking()
+                .Include(o => o.Offer).ThenInclude(o => o.Animal)
+                .Include(o => o.Offer).ThenInclude(o => o.Farm)
+                .FirstOrDefaultAsync(o => o.Id == id);
+            if (order == null) return NotFound();
+            if (order.InvestorUserId != user.Id) return Forbid();
+            return Ok(order);
+        }
+
+        /// <summary>
+        /// Returns the investment commitment "contract" — bank transfer instructions
+        /// for the investor + a denormalised view of all parties (farm owner, investor,
+        /// animal, amount, profit ratio, expected harvest). Frontend renders this as
+        /// a printable cam-kết document.
+        /// </summary>
+        [HttpGet("orders/{id:guid}/commitment")]
+        public async Task<ActionResult<CommitmentDto>> GetCommitment(Guid id)
+        {
+            var user = await AuthorizedUser;
+            if (user == null) return Unauthorized();
+
+            var order = await _db.InvestmentOrders.AsNoTracking()
+                .Include(o => o.Offer).ThenInclude(o => o.Animal)
+                .Include(o => o.Offer).ThenInclude(o => o.Farm)
+                .FirstOrDefaultAsync(o => o.Id == id);
+            if (order == null) return NotFound();
+            if (order.InvestorUserId != user.Id) return Forbid();
+
+            var farm = order.Offer?.Farm;
+            var animal = order.Offer?.Animal;
+
+            return Ok(new CommitmentDto
+            {
+                OrderId = order.Id,
+                CreatedAt = order.CreatedAt,
+                Status = order.Status.ToString(),
+                TransferReference = order.TransferReference,
+                BankTransferConfirmedAt = order.BankTransferConfirmedAt,
+
+                TotalAmount = order.TotalAmount,
+                Currency = "VND",
+                ProfitRatio = order.Offer?.ProfitRatio ?? 0,
+                ExpectedHarvestDate = order.Offer?.ExpectedHarvestDate,
+                OfferTitle = order.Offer?.Title,
+                OfferDescription = order.Offer?.Description,
+
+                Investor = new PartyDto
+                {
+                    UserId = order.InvestorUserId,
+                    Name = order.InvestorUserName ?? user.UserName,
+                },
+                Farm = new FarmPartyDto
+                {
+                    Id = farm?.Id ?? Guid.Empty,
+                    Name = farm?.Name,
+                    OwnerName = farm?.OwnerName,
+                    Location = farm?.Location,
+                    BankName = farm?.BankName,
+                    BankAccountNumber = farm?.BankAccountNumber,
+                    BankAccountHolder = farm?.BankAccountHolder,
+                    BankBranch = farm?.BankBranch,
+                },
+                Animal = new AnimalRefDto
+                {
+                    Id = animal?.Id ?? Guid.Empty,
+                    Code = animal?.Code,
+                    Name = animal?.Name,
+                    Species = animal?.Species.ToString(),
+                    Weight = animal?.Weight ?? 0,
+                    DateOfBirth = animal?.DateOfBirth,
+                }
+            });
+        }
+
+        /// <summary>
+        /// Admin endpoint — mark an order's bank transfer as confirmed. Triggers
+        /// `ConfirmOrder` which moves the order from Pending → Confirmed and
+        /// issues the share certificate.
+        /// </summary>
+        [HttpPost("orders/{id:guid}/confirm-bank-transfer")]
+        public async Task<ActionResult> ConfirmBankTransfer(Guid id)
+        {
+            var user = await AuthorizedUser;
+            if (user == null) return Unauthorized();
+
+            var order = await _db.InvestmentOrders.FirstOrDefaultAsync(o => o.Id == id);
+            if (order == null) return NotFound();
+
+            order.BankTransferConfirmedAt = DateTime.UtcNow;
+            order.ChangedByUserId = user.Id;
+            order.ChangedByUserName = user.UserName;
+            order.ChangedAt = DateTime.UtcNow;
+            await _db.SaveChangesAsync();
+
+            // Auto-confirm so investor gets the certificate
+            await _service.ConfirmOrder(id);
+            return Ok();
+        }
+
         // ---------- Animal updates ----------
 
         [HttpPost("animal-updates")]
@@ -116,5 +228,55 @@ namespace Farm.Api.Controllers
         {
             return Ok(await _service.GetAnimalUpdates(animalId, take));
         }
+    }
+
+    // ---------- Commitment DTOs ----------
+
+    public class CommitmentDto
+    {
+        public Guid OrderId { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public string Status { get; set; }
+        public string TransferReference { get; set; }
+        public DateTime? BankTransferConfirmedAt { get; set; }
+
+        public decimal TotalAmount { get; set; }
+        public string Currency { get; set; }
+        public decimal ProfitRatio { get; set; }
+        public DateTime? ExpectedHarvestDate { get; set; }
+        public string OfferTitle { get; set; }
+        public string OfferDescription { get; set; }
+
+        public PartyDto Investor { get; set; }
+        public FarmPartyDto Farm { get; set; }
+        public AnimalRefDto Animal { get; set; }
+    }
+
+    public class PartyDto
+    {
+        public Guid UserId { get; set; }
+        public string Name { get; set; }
+    }
+
+    public class FarmPartyDto
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string OwnerName { get; set; }
+        public string Location { get; set; }
+        public string BankName { get; set; }
+        public string BankAccountNumber { get; set; }
+        public string BankAccountHolder { get; set; }
+        public string BankBranch { get; set; }
+    }
+
+    public class AnimalRefDto
+    {
+        public Guid Id { get; set; }
+        public string Code { get; set; }
+        public string Name { get; set; }
+        public string Species { get; set; }
+        public float Weight { get; set; }
+        public DateTime? DateOfBirth { get; set; }
     }
 }
