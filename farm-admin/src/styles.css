@@ -80,3 +80,211 @@ mat-form-field {
   width: 100%;
   border-radius: 5%;
 }
+
+/* =================================================================
+   Dashboard-style consistency layer for management pages.
+   Restyle Material building blocks so all *-management pages share
+   the same friendly look as the home dashboard, without touching
+   each component's template.
+   ================================================================= */
+
+body {
+  background: #f7f8fa;
+  color: #1f2937;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ----- Page container ----- */
+mat-card {
+  max-width: 1280px;
+  margin: 16px auto !important;
+  border-radius: 14px !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04) !important;
+  background: white !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+/* ----- Card header: title + subtitle ----- */
+mat-card-header {
+  padding: 22px 28px 18px !important;
+  border-bottom: 1px solid #f3f4f6;
+  background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 60%);
+}
+mat-card-title {
+  font-size: 1.45rem !important;
+  font-weight: 700 !important;
+  color: #111827 !important;
+  letter-spacing: -0.01em;
+  margin-bottom: 4px !important;
+}
+mat-card-title strong { font-weight: 700; }
+mat-card-subtitle {
+  font-size: 0.9rem !important;
+  color: #6b7280 !important;
+  margin: 0 !important;
+}
+
+mat-card-content {
+  padding: 22px 28px !important;
+}
+
+/* ----- "Create new" / primary action button (existing class) ----- */
+.btn-create {
+  background: #10b981 !important;
+  color: white !important;
+  border-radius: 10px !important;
+  min-width: 44px !important;
+  height: 40px !important;
+  padding: 0 14px !important;
+  margin-bottom: 16px !important;
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s !important;
+  box-shadow: 0 2px 4px -1px rgba(16, 185, 129, 0.4) !important;
+}
+.btn-create:hover {
+  background: #059669 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px -2px rgba(16, 185, 129, 0.45) !important;
+}
+.btn-create mat-icon { color: white; }
+
+/* ----- Tables ----- */
+table.mat-mdc-table, table[mat-table] {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  background: white;
+}
+.mat-mdc-header-row, tr.mat-mdc-header-row {
+  background: #f9fafb !important;
+}
+.mat-mdc-header-cell, th.mat-mdc-header-cell {
+  color: #374151 !important;
+  font-weight: 600 !important;
+  font-size: 0.82rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  background: #f9fafb !important;
+}
+.mat-mdc-row:hover, tr.mat-mdc-row:hover {
+  background: #f9fafb !important;
+}
+.mat-mdc-cell, td.mat-mdc-cell {
+  color: #1f2937 !important;
+  font-size: 0.9rem !important;
+  border-bottom-color: #f3f4f6 !important;
+}
+
+/* ----- Paginator ----- */
+.mat-mdc-paginator {
+  border-top: 1px solid #f3f4f6;
+  background: #fafbfc;
+  border-radius: 0 0 10px 10px;
+}
+
+/* ----- Not-found text in tables ----- */
+.not-found-text {
+  color: #9ca3af;
+  font-style: italic;
+  padding: 12px 0;
+}
+
+/* ----- Status colors (reusable across pages) ----- */
+.colour-success { color: #059669 !important; }
+.colour-error   { color: #dc2626 !important; }
+.colour-warning { color: #d97706 !important; }
+.colour-danger  { color: #dc2626 !important; }
+
+/* ----- Card on dark/colored backgrounds ----- */
+.bordered-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  background: white;
+}
+
+/* ----- Mat-icon-button hover for table action buttons ----- */
+table button.mat-mdc-button {
+  min-width: 36px;
+  border-radius: 8px;
+}
+table button.mat-mdc-button:hover {
+  background: #ecfdf5 !important;
+}
+
+/* ----- Dialog ----- */
+.mat-mdc-dialog-container {
+  border-radius: 16px !important;
+}
+
+/* ----- Page-wide padding so cards don't kiss the side-nav ----- */
+mat-sidenav-content > router-outlet + * {
+  display: block;
+  padding: 8px 12px;
+}
+
+/* =================================================================
+   For pages that use the legacy `<div class="page-*">` pattern
+   (vaccine, feed, alerts, disease, forum, growth-log) — give them
+   the same "card with green header banner" look as mat-card pages.
+   ================================================================= */
+
+[class^="page-"], [class*=" page-"] {
+  max-width: 1280px;
+  margin: 16px auto !important;
+  padding: 0 !important;
+}
+
+[class^="page-"] > h2:first-of-type,
+[class*=" page-"] > h2:first-of-type,
+[class^="page-"] > div:first-of-type > h2,
+[class*=" page-"] > div:first-of-type > h2 {
+  display: block;
+  margin: 0 0 0 0;
+  padding: 22px 28px 18px;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #111827;
+  background: linear-gradient(135deg, #ecfdf5, #ffffff 60%);
+  border: 1px solid #e5e7eb;
+  border-bottom: 1px solid #f3f4f6;
+  border-radius: 14px 14px 0 0;
+  letter-spacing: -0.01em;
+}
+
+/* Wrap content under the H2 in a sibling card body */
+[class^="page-"] > *:not(h2):not(:first-of-type),
+[class*=" page-"] > *:not(h2):not(:first-of-type) {
+  background: white;
+  border-left: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
+  padding: 16px 22px;
+}
+[class^="page-"] > *:last-child,
+[class*=" page-"] > *:last-child {
+  border-bottom: 1px solid #e5e7eb;
+  border-radius: 0 0 14px 14px;
+  padding-bottom: 22px;
+}
+
+/* ----- "Coming soon" / empty state ----- */
+.empty-coming-soon {
+  text-align: center;
+  padding: 60px 24px;
+  color: #6b7280;
+}
+.empty-coming-soon .emoji { font-size: 3rem; display: block; margin-bottom: 12px; opacity: 0.6; }
+.empty-coming-soon h3 { color: #1f2937; margin: 0 0 8px; }
+
+/* ----- Responsive ----- */
+@media (max-width: 768px) {
+  mat-card-header  { padding: 18px 18px 14px !important; }
+  mat-card-content { padding: 18px !important; }
+  mat-card-title   { font-size: 1.2rem !important; }
+  [class^="page-"] > h2:first-of-type,
+  [class*=" page-"] > h2:first-of-type {
+    padding: 18px 18px 14px;
+    font-size: 1.2rem;
+  }
+}

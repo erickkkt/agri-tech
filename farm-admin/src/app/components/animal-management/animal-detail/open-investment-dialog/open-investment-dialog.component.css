@@ -15,6 +15,16 @@
 
 .full-width { width: 100%; }
 
+.info-banner {
+  padding: 10px 14px;
+  background: #eff6ff;
+  border-left: 3px solid #3b82f6;
+  border-radius: 6px;
+  color: #1e40af;
+  font-size: 0.85rem;
+  margin-bottom: 14px;
+}
+
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;

@@ -1,7 +1,8 @@
-<div class="page-reports" style="padding: 16px;">
-  <div style="display: flex; align-items: center; gap: 12px;">
-    <h2 style="flex: 1;">Báo cáo tổng hợp</h2>
-    <button mat-stroked-button (click)="refresh()">Làm mới</button>
+<div class="page-reports">
+  <h2>📊 Báo cáo tổng hợp</h2>
+  <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+    <span style="flex: 1; color: #6b7280;">Tổng quan tình hình vật nuôi và cân nặng trung bình theo thời gian.</span>
+    <button mat-stroked-button (click)="refresh()">🔄 Làm mới</button>
   </div>
 
   <div *ngIf="loading" style="padding: 24px; text-align: center;">Đang tải...</div>

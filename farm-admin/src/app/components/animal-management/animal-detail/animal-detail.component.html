@@ -123,19 +123,18 @@
         <table *ngIf="investmentHistory.length > 0" class="history-table">
           <thead>
             <tr>
-              <th>Offer</th>
-              <th>Share đã bán</th>
-              <th>Giá / share</th>
+              <th>Cơ hội đầu tư</th>
+              <th>Mức huy động</th>
               <th>% LN nhà đầu tư</th>
               <th>Khai thác</th>
               <th>Trạng thái</th>
+              <th>Ngày tạo</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let o of investmentHistory">
               <td>{{ o.title }}</td>
-              <td>{{ o.totalShares - o.availableShares }} / {{ o.totalShares }}</td>
-              <td><strong>{{ o.pricePerShare | number }}</strong>đ</td>
+              <td><strong>{{ (o.totalShares * o.pricePerShare) | number }}</strong>đ</td>
               <td>{{ (o.profitRatio * 100) | number:'1.0-2' }}%</td>
               <td>{{ o.expectedHarvestDate ? (o.expectedHarvestDate | date:'dd/MM/yyyy') : '—' }}</td>
               <td>
@@ -143,6 +142,7 @@
                   {{ OFFER_STATUS[o.status] || o.status }}
                 </span>
               </td>
+              <td>{{ o.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
             </tr>
           </tbody>
         </table>

@@ -1,6 +1,7 @@
-<div class="page-alerts" style="padding: 16px;">
+<div class="page-alerts">
+  <h2>🔔 Cảnh báo hệ thống</h2>
   <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-    <h2 style="flex: 1;">Cảnh báo hệ thống</h2>
+    <span style="flex: 1; color: #6b7280;">Theo dõi vật nuôi bất thường, trễ lịch tiêm, tồn kho thấp.</span>
     <mat-slide-toggle [(ngModel)]="unreadOnly" (change)="load()">Chỉ hiển thị chưa đọc</mat-slide-toggle>
     <button mat-stroked-button (click)="markAllRead()">Đánh dấu đã đọc tất cả</button>
   </div>

@@ -8,7 +8,7 @@
   padding-right: 24px;
 }
 .page-header h2 { margin-bottom: 8px; font-size: 2rem; }
-.page-header p { color: var(--gray-600); max-width: 600px; margin: 0 auto; }
+.page-header p { color: var(--gray-600); max-width: 680px; margin: 0 auto; }
 
 /* ---------- Offer cards ---------- */
 .offers-grid {
@@ -20,7 +20,6 @@
   display: flex;
   flex-direction: column;
   padding: 24px;
-  position: relative;
 }
 .offer-header {
   display: flex;
@@ -56,28 +55,35 @@
   min-height: 38px;
 }
 
-/* Progress */
-.progress-section { margin-bottom: 18px; }
-.progress-meta {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.82rem;
-  color: var(--gray-600);
-  margin-bottom: 6px;
+/* Big investment amount */
+.big-amount {
+  padding: 18px;
+  background: linear-gradient(135deg, var(--brand-50), #d1fae5);
+  border: 1px solid var(--brand-200);
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  text-align: center;
 }
-.progress-meta strong { color: var(--gray-900); }
-.progress-bar {
-  width: 100%;
-  height: 8px;
-  background: var(--gray-100);
-  border-radius: 999px;
-  overflow: hidden;
+.big-amount-label {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--brand-700);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
 }
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--brand-400), var(--brand-600));
-  border-radius: 999px;
-  transition: width 0.4s ease;
+.big-amount-value {
+  display: block;
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--brand-800);
+  letter-spacing: -0.02em;
+}
+.big-amount-value small {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-left: 2px;
 }
 
 /* Stats */
@@ -86,30 +92,40 @@
   grid-template-columns: 1fr 1fr;
   gap: 12px;
   margin-bottom: 18px;
-  padding: 14px;
-  background: var(--brand-50);
-  border-radius: var(--radius-sm);
 }
 .stat-label {
   font-size: 0.72rem;
   color: var(--gray-600);
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 }
 .stat-value {
-  font-size: 1rem;
-  font-weight: 700;
+  font-size: 0.95rem;
+  font-weight: 600;
   color: var(--gray-900);
 }
-.stat-value.price { color: var(--brand-700); }
+
+.status-pill {
+  display: inline-block;
+  padding: 3px 10px;
+  background: var(--brand-50);
+  color: var(--brand-800);
+  border: 1px solid var(--brand-200);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.status-pill.sold {
+  background: var(--gray-100);
+  color: var(--gray-600);
+  border-color: var(--gray-200);
+}
 
 .offer-actions {
   margin-top: auto;
-  display: flex;
-  gap: 8px;
 }
-.offer-actions button { flex: 1; }
+.offer-actions button { width: 100%; }
 
 /* ---------- Modal ---------- */
 .modal-backdrop {
@@ -147,6 +163,29 @@
 .modal-header h3 { margin: 0 0 4px; }
 .modal-header p { color: var(--gray-600); font-size: 0.85rem; margin: 0; }
 .modal-body { padding: 20px 24px; }
+
+.confirm-amount {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 18px;
+  background: linear-gradient(135deg, var(--brand-50), #d1fae5);
+  border-radius: var(--radius);
+  margin-bottom: 14px;
+}
+.confirm-amount-label {
+  font-size: 0.78rem;
+  color: var(--brand-700);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.confirm-amount-value {
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: var(--brand-800);
+  letter-spacing: -0.02em;
+}
+
 .modal-row {
   display: flex;
   justify-content: space-between;
@@ -154,24 +193,17 @@
   font-size: 0.9rem;
   color: var(--gray-700);
 }
-.modal-row.total {
-  border-top: 1px solid var(--border);
-  margin-top: 8px;
-  padding-top: 14px;
-  font-weight: 700;
-  font-size: 1.05rem;
-  color: var(--gray-900);
-}
-.modal-row.total .modal-row-value { color: var(--brand-700); font-size: 1.2rem; }
 
-.qty-input {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 14px 0;
+.info-note {
+  margin-top: 14px;
+  padding: 12px;
+  background: #eff6ff;
+  border-left: 3px solid var(--info);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: var(--gray-700);
+  line-height: 1.5;
 }
-.qty-input label { font-weight: 600; font-size: 0.85rem; flex: 1; }
-.qty-input input { width: 110px; text-align: center; }
 
 .modal-footer {
   padding: 16px 24px;
@@ -180,8 +212,4 @@
   gap: 8px;
   justify-content: flex-end;
   border-top: 1px solid var(--border);
-}
-
-@media (max-width: 480px) {
-  .offer-stats { grid-template-columns: 1fr; }
 }

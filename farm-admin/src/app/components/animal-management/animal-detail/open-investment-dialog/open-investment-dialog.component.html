@@ -1,4 +1,4 @@
-<h2 mat-dialog-title>📈 Kêu gọi đầu tư</h2>
+<h2 mat-dialog-title>📈 Kêu gọi đầu tư cho vật nuôi này</h2>
 
 <mat-dialog-content class="invest-dialog">
   <div class="animal-summary">
@@ -9,8 +9,12 @@
     </div>
   </div>
 
+  <div class="info-banner">
+    💡 Mỗi vật nuôi mở 1 cơ hội đầu tư duy nhất — toàn bộ mức huy động sẽ được 1 nhà đầu tư đặt mua.
+  </div>
+
   <mat-form-field appearance="outline" class="full-width">
-    <mat-label>Tiêu đề offer</mat-label>
+    <mat-label>Tiêu đề (hiển thị trên webuser)</mat-label>
     <input matInput [(ngModel)]="title" maxlength="250" />
   </mat-form-field>
 
@@ -19,23 +23,17 @@
     <textarea matInput [(ngModel)]="description" rows="3" maxlength="4000"></textarea>
   </mat-form-field>
 
-  <div class="form-row">
-    <mat-form-field appearance="outline">
-      <mat-label>Tổng số share</mat-label>
-      <input matInput type="number" min="1" [(ngModel)]="totalShares" />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Giá / share (VND)</mat-label>
-      <input matInput type="number" min="0" [(ngModel)]="pricePerShare" />
-    </mat-form-field>
-  </div>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Mức huy động (VND)</mat-label>
+    <input matInput type="number" min="0" step="1000000" [(ngModel)]="totalAmount" />
+    <mat-hint>Số tiền nhà đầu tư bỏ ra để đầu tư vào con vật nuôi này</mat-hint>
+  </mat-form-field>
 
   <div class="form-row">
     <mat-form-field appearance="outline">
       <mat-label>% Chia LN cho nhà đầu tư</mat-label>
       <input matInput type="number" min="0" max="100" [(ngModel)]="profitRatioPct" />
-      <mat-hint>0-100. Ví dụ 70 = nhà đầu tư nhận 70% doanh thu khai thác</mat-hint>
+      <mat-hint>0-100. VD: 70 = nhà đầu tư nhận 70% doanh thu khai thác</mat-hint>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
@@ -45,9 +43,9 @@
   </div>
 
   <div class="summary-banner">
-    <div>
-      <strong>{{ totalRaise | number }}đ</strong>
-      <small>Tổng vốn huy động ({{ totalShares }} share × {{ pricePerShare | number }}đ)</small>
+    <div class="summary-amount">
+      <strong>{{ totalAmount | number }}đ</strong>
+      <small>Nhà đầu tư sẽ trả {{ totalAmount | number }}đ để sở hữu cơ hội từ con vật nuôi này, và nhận {{ profitRatioPct }}% lợi nhuận khi khai thác.</small>
     </div>
   </div>
 
@@ -57,6 +55,6 @@
 <mat-dialog-actions align="end">
   <button mat-button (click)="cancel()" [disabled]="submitting">Huỷ</button>
   <button mat-flat-button color="primary" (click)="submit()" [disabled]="submitting">
-    <mat-icon>trending_up</mat-icon> {{ submitting ? 'Đang tạo...' : 'Mở offer đầu tư' }}
+    <mat-icon>trending_up</mat-icon> {{ submitting ? 'Đang tạo...' : 'Mở cơ hội đầu tư' }}
   </button>
 </mat-dialog-actions>
