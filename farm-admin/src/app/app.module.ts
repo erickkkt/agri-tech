@@ -71,6 +71,7 @@ import { ReportsComponent } from './components/reports/reports.component';
 import { DiseaseManagementComponent } from './components/disease-management/disease-management.component';
 import { DiseasePopupComponent } from './components/disease-management/disease-popup/disease-popup.component';
 import { TreatmentPopupComponent } from './components/disease-management/treatment-popup/treatment-popup.component';
+import { PendingOrdersComponent } from './components/pending-orders/pending-orders.component';
 
 
 import { MaxLengthMessage } from './shared/pipes/max-length-error-message.pipe';
@@ -142,6 +143,7 @@ const appInitializerFn = (configurationService: ConfigurationService) => {
     DiseaseManagementComponent,
     DiseasePopupComponent,
     TreatmentPopupComponent,
+    PendingOrdersComponent,
   ],
   bootstrap: [AppComponent], imports: [BrowserModule,
     BrowserAnimationsModule,
