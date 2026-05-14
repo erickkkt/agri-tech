@@ -6,9 +6,11 @@
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /app
 EXPOSE 8080
-# Postgres needs ICU at runtime for case-insensitive collations and globalization-aware string comparisons
+# Postgres needs ICU at runtime for case-insensitive collations and globalization-aware string comparisons.
+# Npgsql 10 also p/invokes libgssapi_krb5.so.2 during connection negotiation (even when not using
+# Kerberos auth) — without it you get "cannot open shared object file" on the first DB call.
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libicu-dev tzdata \
+    && apt-get install -y --no-install-recommends libicu-dev tzdata libgssapi-krb5-2 \
     && rm -rf /var/lib/apt/lists/*
 ENV ASPNETCORE_URLS=http://+:8080 \
     DOTNET_RUNNING_IN_CONTAINER=true \
