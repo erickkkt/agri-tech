@@ -108,6 +108,11 @@ export class ApiEndPoints {
         return `${this.configurationService.apiBaseUrl}/api/${configuration.version}/investment/orders/${orderId}/confirm-bank-transfer`;
     }
 
+    // ----- Listings (admin) -----
+    updateListing() {
+        return `${this.configurationService.apiBaseUrl}/api/${configuration.version}/listings`;
+    }
+
 
     /*********** USERS **************/
     getUserInfo() {

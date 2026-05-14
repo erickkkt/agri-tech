@@ -18,6 +18,8 @@ export class ConfigurationService {
         if(result) {
           this.moduleConfig.resourceServer.allowedUrls!.push(result.apiUrl);
           this.moduleConfig.resourceServer.allowedUrls!.push(result.identityUrl);
+          // userAppUrl is optional — used to deep-link from admin to webuser marketplace
+          if (result.userAppUrl === 'USER_APP_URL') result.userAppUrl = '';
           this.clientConfiguration = result;
         }
         return result;
@@ -61,6 +63,11 @@ export class ConfigurationService {
     return this.configuration.adminUrl;
   }
 
+  /** URL of the public farm-user SPA — used to deep-link to marketplace from admin. */
+  get userAppUrl(): string {
+    return this.clientConfiguration?.userAppUrl ?? '';
+  }
+
 }
 
 export interface IServerConfiguration {
@@ -76,4 +83,5 @@ export interface IServerConfiguration {
 export interface IClientConfiguration {
   apiUrl: string;
   identityUrl: string;
+  userAppUrl?: string;
 }

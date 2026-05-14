@@ -39,6 +39,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { MY_FORMATS } from './shared/constants/constants';
 
@@ -188,6 +189,7 @@ const appInitializerFn = (configurationService: ConfigurationService) => {
     MatNativeDateModule,
     MatAutocompleteModule,
     MatExpansionModule,
+    MatSnackBarModule,
   ],
   providers: [
     ConfigurationService,

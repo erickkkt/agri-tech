@@ -1,6 +1,8 @@
-<h2 mat-dialog-title>💰 Đăng bán vật nuôi</h2>
+<h2 mat-dialog-title>💰 Đăng tin lên sàn giao dịch</h2>
 
 <mat-dialog-content class="sell-dialog">
+
+  <!-- Animal summary -->
   <div class="animal-summary">
     <span class="emoji">{{ animal.species === 0 ? '🦌' : (animal.species === 1 ? '🐑' : '🐄') }}</span>
     <div>
@@ -9,55 +11,78 @@
     </div>
   </div>
 
+  <!-- Category picker as cards -->
+  <label class="field-label">Loại sản phẩm</label>
+  <div class="category-grid">
+    <button type="button"
+            class="category-card"
+            *ngFor="let c of categories"
+            [class.active]="category.value === c.value"
+            (click)="selectCategory(c)">
+      <span class="cat-emoji">{{ c.emoji }}</span>
+      <div class="cat-text">
+        <strong>{{ c.label }}</strong>
+        <small>{{ c.hint }}</small>
+      </div>
+    </button>
+  </div>
+
+  <!-- Price suggestion -->
   <div *ngIf="suggestion" class="suggestion-banner">
     💡 <strong>Giá gợi ý:</strong> {{ suggestion.suggestedPrice | number }} {{ suggestion.currency }}
     <small>({{ animal.weight }}kg × {{ suggestion.pricePerKg | number }}đ/kg)</small>
   </div>
 
+  <!-- Core fields -->
   <mat-form-field appearance="outline" class="full-width">
     <mat-label>Tiêu đề tin đăng</mat-label>
     <input matInput [(ngModel)]="title" maxlength="250" />
   </mat-form-field>
 
   <mat-form-field appearance="outline" class="full-width">
-    <mat-label>Mô tả</mat-label>
-    <textarea matInput [(ngModel)]="description" rows="3" maxlength="4000"></textarea>
+    <mat-label>Mô tả chi tiết</mat-label>
+    <textarea matInput [(ngModel)]="description" rows="3" maxlength="4000"
+              placeholder="Mô tả nguồn gốc, chất lượng, điều kiện vận chuyển..."></textarea>
   </mat-form-field>
 
   <div class="form-row">
     <mat-form-field appearance="outline">
-      <mat-label>Loại sản phẩm</mat-label>
-      <mat-select [(ngModel)]="category">
-        <mat-option [value]="0">Vật nuôi giống</mat-option>
-        <mat-option [value]="1">Nhung</mat-option>
-        <mat-option [value]="2">Thịt</mat-option>
-        <mat-option [value]="3">Trứng</mat-option>
-        <mat-option [value]="99">Khác</mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
       <mat-label>Giá (VND)</mat-label>
       <input matInput type="number" min="0" [(ngModel)]="price" />
     </mat-form-field>
-  </div>
-
-  <div class="form-row">
     <mat-form-field appearance="outline">
       <mat-label>Số lượng</mat-label>
       <input matInput type="number" min="1" [(ngModel)]="quantity" />
     </mat-form-field>
-
     <mat-form-field appearance="outline">
       <mat-label>Đơn vị</mat-label>
       <input matInput [(ngModel)]="unit" maxlength="50" />
     </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Tỉnh / Thành</mat-label>
-      <input matInput [(ngModel)]="province" maxlength="120" />
-    </mat-form-field>
   </div>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Tỉnh / Thành (để buyer lọc theo địa phương)</mat-label>
+    <input matInput [(ngModel)]="province" maxlength="120" placeholder="VD: Hà Tĩnh" />
+  </mat-form-field>
+
+  <!-- Photo URLs -->
+  <label class="field-label">Hình ảnh sản phẩm</label>
+  <p class="field-hint">Dán URL ảnh từ blob storage / CDN. Ảnh đầu tiên là ảnh đại diện hiển thị trên sàn.</p>
+
+  <div class="photo-row" *ngFor="let url of photoUrls; let i = index; trackBy: trackByIndex">
+    <mat-form-field appearance="outline" class="photo-input">
+      <mat-label>{{ i === 0 ? 'Ảnh đại diện' : ('Ảnh ' + (i + 1)) }}</mat-label>
+      <input matInput [(ngModel)]="photoUrls[i]" placeholder="https://..." />
+    </mat-form-field>
+    <button mat-icon-button type="button" color="warn" (click)="removePhoto(i)"
+            *ngIf="photoUrls.length > 1" matTooltip="Xoá">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <button mat-stroked-button type="button" class="add-photo-btn" (click)="addPhoto()">
+    <mat-icon>add_photo_alternate</mat-icon> Thêm ảnh
+  </button>
 
   <div class="error-banner" *ngIf="error">⚠️ {{ error }}</div>
 </mat-dialog-content>
@@ -65,6 +90,6 @@
 <mat-dialog-actions align="end">
   <button mat-button (click)="cancel()" [disabled]="submitting">Huỷ</button>
   <button mat-flat-button color="primary" (click)="submit()" [disabled]="submitting">
-    <mat-icon>sell</mat-icon> {{ submitting ? 'Đang đăng...' : 'Đăng bán ngay' }}
+    <mat-icon>storefront</mat-icon> {{ submitting ? 'Đang đăng...' : 'Đăng lên sàn' }}
   </button>
 </mat-dialog-actions>

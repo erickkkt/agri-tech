@@ -54,6 +54,26 @@ export class AnimalService {
   async getInvestmentHistory(animalId: string): Promise<AnimalInvestmentHistoryItem[] | undefined> {
     return await this._httpService.getDataAsync<AnimalInvestmentHistoryItem[]>(this.api.getAnimalInvestmentHistory(animalId));
   }
+
+  /** Update an existing Listing — used to change status (Active → Sold → Closed). */
+  async updateListing(payload: UpdateListingPayload): Promise<void> {
+    await this._httpService.putDataAsync<unknown>(this.api.updateListing(), payload);
+  }
+}
+
+export interface UpdateListingPayload {
+  id: string;
+  title: string;
+  description?: string;
+  category: number;
+  species: number;
+  status: number;            // ListingStatus
+  price: number;
+  currency: string;
+  quantity: number;
+  unit: string;
+  province?: string;
+  photoUrls?: string[];
 }
 
 // ---------- DTOs (mirror backend) ----------

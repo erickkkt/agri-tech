@@ -1,4 +1,5 @@
 {
     "apiUrl": "API_URL",
-    "identityUrl": "AUTH_URL"
+    "identityUrl": "AUTH_URL",
+    "userAppUrl": "USER_APP_URL"
 }

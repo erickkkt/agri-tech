@@ -79,10 +79,17 @@
     <mat-card class="history-card">
       <mat-card-header>
         <mat-card-title>📦 Lịch sử đăng bán</mat-card-title>
-        <mat-card-subtitle>Các tin đăng marketplace tạo cho vật nuôi này</mat-card-subtitle>
+        <mat-card-subtitle>Các tin đăng marketplace tạo cho vật nuôi này. Đổi trạng thái khi đã giao dịch xong.</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
         <div *ngIf="salesHistory.length === 0" class="empty-row">Chưa có tin đăng nào.</div>
+
+        <div class="history-actions" *ngIf="salesHistory.length > 0">
+          <button mat-stroked-button color="primary" (click)="viewOnMarketplace()">
+            <mat-icon>open_in_new</mat-icon> Xem trên sàn (webuser)
+          </button>
+        </div>
+
         <table *ngIf="salesHistory.length > 0" class="history-table">
           <thead>
             <tr>
@@ -97,13 +104,20 @@
           <tbody>
             <tr *ngFor="let s of salesHistory">
               <td>{{ s.title }}</td>
-              <td>{{ categoryLabel(s.category) }}</td>
+              <td>
+                <span class="category-icon">{{ categoryEmoji(s.category) }}</span>
+                {{ categoryLabel(s.category) }}
+              </td>
               <td><strong>{{ s.price | number }}</strong> {{ s.currency }}</td>
               <td>{{ s.quantity }} {{ s.unit }}</td>
               <td>
-                <span class="status-chip" [ngClass]="'status-' + s.status">
-                  {{ LISTING_STATUS[s.status] || s.status }}
-                </span>
+                <mat-select [(value)]="s.status"
+                            (selectionChange)="changeListingStatus(s, $event.value)"
+                            class="status-select status-{{ s.status }}">
+                  <mat-option [value]="1">📢 Đang bán</mat-option>
+                  <mat-option [value]="2">✅ Đã bán</mat-option>
+                  <mat-option [value]="3">⛔ Đã đóng</mat-option>
+                </mat-select>
               </td>
               <td>{{ s.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
             </tr>

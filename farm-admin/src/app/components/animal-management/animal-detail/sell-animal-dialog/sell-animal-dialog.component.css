@@ -1,4 +1,4 @@
-.sell-dialog { min-width: 480px; }
+.sell-dialog { min-width: 540px; }
 
 .animal-summary {
   display: flex;
@@ -7,11 +7,56 @@
   padding: 14px;
   background: #f9fafb;
   border-radius: 10px;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 .animal-summary .emoji { font-size: 2.5rem; }
 .animal-summary .code { color: #6b7280; font-size: 0.85rem; }
 .animal-summary .muted { color: #6b7280; font-size: 0.85rem; }
+
+.field-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 12px 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.field-hint { color: #6b7280; font-size: 0.82rem; margin: 0 0 10px; }
+
+/* Category cards */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.category-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+.category-card:hover {
+  border-color: #a7f3d0;
+  background: #f0fdf4;
+}
+.category-card.active {
+  border-color: #10b981;
+  background: #ecfdf5;
+  box-shadow: 0 4px 8px -2px rgba(16, 185, 129, 0.25);
+}
+.cat-emoji { font-size: 2rem; flex-shrink: 0; }
+.cat-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.cat-text strong { color: #111827; font-size: 0.95rem; }
+.cat-text small { color: #6b7280; font-size: 0.78rem; }
 
 .suggestion-banner {
   padding: 10px 14px;
@@ -28,10 +73,25 @@
 
 .form-row {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1.4fr 1fr 1fr;
   gap: 12px;
 }
 .form-row mat-form-field { width: 100%; }
+
+/* Photos */
+.photo-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.photo-input { flex: 1; }
+
+.add-photo-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 12px;
+}
 
 .error-banner {
   padding: 10px 14px;
@@ -45,4 +105,5 @@
 @media (max-width: 600px) {
   .sell-dialog { min-width: 0; }
   .form-row { grid-template-columns: 1fr; }
+  .category-grid { grid-template-columns: 1fr; }
 }

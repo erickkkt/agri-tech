@@ -114,6 +114,27 @@
 .status-2 { background: #dbeafe; color: #1e40af; }  /* sold / closed */
 .status-3 { background: #fef3c7; color: #92400e; }  /* closed / harvested */
 
+.status-select {
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  min-width: 130px;
+}
+.status-select.status-1 { background: #d1fae5; color: #065f46; }
+.status-select.status-2 { background: #dbeafe; color: #1e40af; }
+.status-select.status-3 { background: #fef3c7; color: #92400e; }
+
+.category-icon { font-size: 1.1rem; margin-right: 4px; }
+
+.history-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
 @media (max-width: 700px) {
   .hero-actions { width: 100%; flex-direction: row; }
   .hero-actions button { flex: 1; min-width: 0; }
