@@ -127,6 +127,14 @@ const routes: Routes = [
         canActivate: [AuthGuardService],
         canActivateChild: [AuthGuardService],
         component: DiseaseManagementComponent
+      },
+      {
+        path: 'pending-orders',
+        data: { roles: [Roles.HOSYSADMIN] },
+        canLoad: [AuthGuardService],
+        canActivate: [AuthGuardService],
+        canActivateChild: [AuthGuardService],
+        component: PendingOrdersComponent
       }
     ]
   },

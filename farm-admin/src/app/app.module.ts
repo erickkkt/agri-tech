@@ -142,6 +142,7 @@ const appInitializerFn = (configurationService: ConfigurationService) => {
     ReportsComponent,
     DiseaseManagementComponent,
     DiseasePopupComponent,
+    PendingOrdersComponent,
     TreatmentPopupComponent,
     PendingOrdersComponent,
   ],

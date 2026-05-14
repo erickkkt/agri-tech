@@ -85,10 +85,15 @@
           <h3>Bản cam kết đầu tư</h3>
           <p>Hợp đồng số giữa nhà đầu tư và chủ trang trại. Có thể in để lưu hồ sơ.</p>
         </div>
-        <button class="ghost no-print" (click)="print()">🖨 In tài liệu</button>
+        <div class="contract-actions no-print">
+          <button class="secondary" (click)="exportPdf()" [disabled]="exporting">
+            {{ exporting ? '⏳ Đang tạo PDF...' : '📄 Tải PDF' }}
+          </button>
+          <button class="ghost" (click)="print()">🖨 In tài liệu</button>
+        </div>
       </div>
 
-      <div class="contract">
+      <div class="contract" #contractRef>
         <h1 class="contract-title">BẢN CAM KẾT ĐẦU TƯ VẬT NUÔI</h1>
         <p class="contract-subtitle">
           Mã đơn: <strong class="mono">{{ commitment.transferReference }}</strong>

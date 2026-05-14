@@ -50,6 +50,12 @@
   flex-shrink: 0;
 }
 
+.contract-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+
 /* ----- Bank card ----- */
 .bank-grid {
   border: 1px solid var(--border);
