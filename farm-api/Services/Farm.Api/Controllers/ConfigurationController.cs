@@ -39,6 +39,7 @@ namespace Farm.Api.Controllers
                 Scope = _configuration["IdentityServerAuthentication:Scope"],
                 SilentRefreshUrl = _configuration["Admin:SilentRefreshUrl"],
                 AdminUrl = _configuration["Admin:BaseUrl"],
+                WebuserUrl = _configuration["Webuser:BaseUrl"]
             };
 
             return Ok(configuration);
@@ -70,6 +71,8 @@ namespace Farm.Api.Controllers
             public string SilentRefreshUrl { get; set; }
 
             public string AdminUrl { get; set; }
+
+            public string WebuserUrl { get; set; }
         }
     }
 }
