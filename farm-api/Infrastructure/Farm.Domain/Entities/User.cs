@@ -30,13 +30,18 @@ namespace Farm.Domain.Entities
         public DateTime? ChangedAt { get; set; }
 
         // --- End-user auth (Phase 4) ---
+        // All three string columns are TRULY nullable in the database (Google-only users
+        // have no PasswordHash, admin users have no DisplayName, etc.). They MUST be
+        // declared `string?` here so EF's model matches the migration's snapshot —
+        // otherwise NRT makes EF treat them as required and you get
+        // PendingModelChangesWarning at startup.
 
         /// <summary>
         /// PBKDF2 hash (Microsoft.AspNetCore.Identity.PasswordHasher) when AuthProvider = Local.
         /// Null when user signs in via an external provider (Google/Facebook).
         /// </summary>
         [MaxLength(500)]
-        public string PasswordHash { get; set; }
+        public string? PasswordHash { get; set; }
 
         /// <summary>How this user authenticates. Defaults to Local for legacy / admin users.</summary>
         public AuthProvider AuthProvider { get; set; } = AuthProvider.Local;
@@ -45,10 +50,10 @@ namespace Farm.Domain.Entities
         /// External account identifier (Google sub, Facebook user_id) when applicable. Null for Local.
         /// </summary>
         [MaxLength(250)]
-        public string ExternalId { get; set; }
+        public string? ExternalId { get; set; }
 
         /// <summary>Display name shown in marketplace / forum. Falls back to UserName if empty.</summary>
         [MaxLength(250)]
-        public string DisplayName { get; set; }
+        public string? DisplayName { get; set; }
     }
 }
