@@ -238,7 +238,13 @@ namespace Farm.Api.Controllers
             var animal = await _animalService.GetAnimal(id);
             if (animal == null) return NotFound();
 
-            // Block duplicate offers on the same animal (DB also has a unique index)
+            // Resolve FarmId from the animal (preferred) or fall back to dto.
+            // Without this, a missing FarmId would surface as a confusing FK violation at SaveChanges.
+            var farmId = animal.Cage?.FarmId ?? dto.FarmId;
+            if (farmId == Guid.Empty)
+                return BadRequest(new { error = "Không xác định được trang trại của vật nuôi này." });
+
+            // Block duplicate offers on the same animal (DB also has a partial unique index on Status=Open)
             var existingOpen = await _db.InvestmentOffers
                 .AnyAsync(o => o.AnimalId == id && o.Status == InvestmentOfferStatus.Open);
             if (existingOpen)
@@ -247,7 +253,7 @@ namespace Farm.Api.Controllers
             var offer = new InvestmentOffer
             {
                 AnimalId = animal.Id,
-                FarmId = animal.Cage?.FarmId ?? dto.FarmId,
+                FarmId = farmId,
                 Title = string.IsNullOrWhiteSpace(dto.Title) ? $"Đầu tư vào {animal.Name} ({animal.Code})" : dto.Title,
                 Description = dto.Description ?? animal.Description,
                 TotalShares = dto.TotalShares,
@@ -263,9 +269,21 @@ namespace Farm.Api.Controllers
             };
 
             _db.InvestmentOffers.Add(offer);
-            await _db.SaveChangesAsync();
+            try
+            {
+                await _db.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex) when (IsUniqueViolation(ex))
+            {
+                // Race condition or stale data slipped past the AnyAsync check.
+                return BadRequest(new { error = "Vật nuôi này đã có offer đang mở. Đóng offer cũ trước." });
+            }
             return Ok(offer.Id);
         }
+
+        /// <summary>True if the EF update exception was a Postgres unique-constraint violation (SQLSTATE 23505).</summary>
+        private static bool IsUniqueViolation(DbUpdateException ex)
+            => ex.InnerException is Npgsql.PostgresException pg && pg.SqlState == "23505";
 
         /// <summary>History of marketplace listings created for this animal.</summary>
         [HttpGet("{id:guid}/sales-history")]
@@ -303,23 +321,32 @@ namespace Farm.Api.Controllers
 
     public class ListAnimalForSaleDto
     {
+        // All reference-type fields are nullable on purpose: the project enables
+        // <Nullable>enable</Nullable>, which combined with [ApiController] makes
+        // non-nullable reference types REQUIRED in [FromBody] binding. The frontend
+        // omits empty strings (province, description, …) and that would otherwise
+        // trip automatic model-state validation → 400 Bad Request before the
+        // controller body runs.
         public Guid FarmId { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
+        public string? Title { get; set; }
+        public string? Description { get; set; }
         public ListingCategory Category { get; set; } = ListingCategory.Breeding;
         public decimal Price { get; set; }
-        public string Currency { get; set; } = "VND";
+        public string? Currency { get; set; } = "VND";
         public int Quantity { get; set; } = 1;
-        public string Unit { get; set; } = "con";
-        public string Province { get; set; }
-        public List<string> PhotoUrls { get; set; }
+        public string? Unit { get; set; } = "con";
+        public string? Province { get; set; }
+        public List<string>? PhotoUrls { get; set; }
     }
 
     public class OpenInvestmentDto
     {
+        // See note on ListAnimalForSaleDto — keep reference-type fields nullable
+        // so the request is not rejected by [ApiController] validation when the
+        // frontend omits optional fields.
         public Guid FarmId { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
+        public string? Title { get; set; }
+        public string? Description { get; set; }
         public int TotalShares { get; set; }
         public decimal PricePerShare { get; set; }
         /// <summary>0..1, e.g. 0.7 = investors get 70% of harvest revenue.</summary>

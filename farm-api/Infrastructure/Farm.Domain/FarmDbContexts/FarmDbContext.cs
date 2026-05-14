@@ -110,8 +110,14 @@ namespace Farm.Domain.FarmDbContexts
 
             modelBuilder.Entity<InvestmentOffer>()
                 .HasIndex(o => new { o.Status, o.CreatedAt });
+            // Partial unique index: only one OPEN offer per animal at a time.
+            // After the offer closes/harvests, the farm can post a new one for the next cycle.
+            // InvestmentOfferStatus.Open = 1. Filter uses quoted PascalCase column name
+            // because Npgsql preserves the C# casing in the generated DDL.
             modelBuilder.Entity<InvestmentOffer>()
-                .HasIndex(o => o.AnimalId).IsUnique();
+                .HasIndex(o => o.AnimalId)
+                .IsUnique()
+                .HasFilter("\"Status\" = 1");
             modelBuilder.Entity<InvestmentOrder>()
                 .HasIndex(o => new { o.OfferId, o.InvestorUserId });
             modelBuilder.Entity<InvestmentOrder>()
