@@ -71,8 +71,11 @@ namespace Farm.Api.Controllers
             var entity = new Listing
             {
                 FarmId = dto.FarmId, SellerUserId = user.Id, Title = dto.Title, Description = dto.Description,
-                Category = dto.Category, Species = dto.Species, Price = dto.Price, Currency = dto.Currency,
-                Quantity = dto.Quantity, Unit = dto.Unit, Province = dto.Province,
+                Category = dto.Category, Species = dto.Species, Price = dto.Price,
+                Currency = string.IsNullOrWhiteSpace(dto.Currency) ? "VND" : dto.Currency,
+                Quantity = dto.Quantity,
+                Unit = string.IsNullOrWhiteSpace(dto.Unit) ? "con" : dto.Unit,
+                Province = dto.Province,
                 ChangedByUserId = user.Id, ChangedByUserName = user.UserName
             };
             return Ok(await _service.Create(entity, dto.PhotoUrls));
@@ -89,8 +92,10 @@ namespace Farm.Api.Controllers
             if (existing == null) return NotFound();
             existing.Title = dto.Title; existing.Description = dto.Description;
             existing.Category = dto.Category; existing.Species = dto.Species;
-            existing.Price = dto.Price; existing.Currency = dto.Currency;
-            existing.Quantity = dto.Quantity; existing.Unit = dto.Unit;
+            existing.Price = dto.Price;
+            existing.Currency = string.IsNullOrWhiteSpace(dto.Currency) ? "VND" : dto.Currency;
+            existing.Quantity = dto.Quantity;
+            existing.Unit = string.IsNullOrWhiteSpace(dto.Unit) ? "con" : dto.Unit;
             existing.Province = dto.Province; existing.Status = dto.Status;
             existing.ChangedByUserId = user.Id; existing.ChangedByUserName = user.UserName;
             existing.ChangedAt = DateTime.UtcNow;

@@ -150,7 +150,15 @@ void ConfigureServices(ConfigurationManager configuration, IWebHostEnvironment e
     builder.Services.AddRepositories();
     builder.Services.AddServices(configuration);
     builder.Services.AddAutoMapper(cfg => cfg.ShouldMapMethod = (m => false), typeof(FarmDbContext).Assembly, typeof(Program).Assembly);
-    builder.Services.AddControllers();
+    builder.Services.AddControllers(options =>
+    {
+        // <Nullable>enable</Nullable> is on project-wide. By default that makes every
+        // non-nullable reference-type property on a [FromBody]/[FromQuery] DTO implicitly
+        // REQUIRED, so any omitted optional field (description, province, search q, …)
+        // gets rejected with 400 before the controller runs. We turn it off and rely on
+        // explicit [Required] / [Range] / etc. attributes for validation instead.
+        options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+    });
 
     // SignalR for realtime alerts / camera notifications
     builder.Services.AddSignalR();

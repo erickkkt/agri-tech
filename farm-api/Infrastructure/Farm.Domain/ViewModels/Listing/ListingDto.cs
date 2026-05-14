@@ -25,17 +25,20 @@ namespace Farm.Domain.ViewModels.Listing
 
     public class CreateListingDto
     {
+        // <Nullable>enable</Nullable> + [ApiController] makes non-nullable reference types
+        // implicitly REQUIRED on inbound binding. Mark optional fields nullable to avoid
+        // model-state validation rejecting the request with 400 when callers omit them.
         [Required] public Guid FarmId { get; set; }
-        [Required, StringLength(250)] public string Title { get; set; }
-        [StringLength(4000)] public string Description { get; set; }
+        [Required, StringLength(250)] public string Title { get; set; } = string.Empty;
+        [StringLength(4000)] public string? Description { get; set; }
         public ListingCategory Category { get; set; }
         public Species Species { get; set; }
         [Range(0, double.MaxValue)] public decimal Price { get; set; }
-        [StringLength(20)] public string Currency { get; set; } = "VND";
+        [StringLength(20)] public string? Currency { get; set; } = "VND";
         [Range(1, int.MaxValue)] public int Quantity { get; set; }
-        [StringLength(50)] public string Unit { get; set; } = "con";
-        [StringLength(120)] public string Province { get; set; }
-        public List<string> PhotoUrls { get; set; } = new();
+        [StringLength(50)] public string? Unit { get; set; } = "con";
+        [StringLength(120)] public string? Province { get; set; }
+        public List<string>? PhotoUrls { get; set; } = new();
     }
 
     public class UpdateListingDto : CreateListingDto
@@ -46,8 +49,11 @@ namespace Farm.Domain.ViewModels.Listing
 
     public class ListingSearchDto
     {
-        public string Q { get; set; }
-        public string Province { get; set; }
+        // Same trap: non-nullable strings on a [FromQuery] DTO are treated as required
+        // by [ApiController] when Nullable is enabled. Marketplace search must work
+        // without any filters, so all filter fields are nullable.
+        public string? Q { get; set; }
+        public string? Province { get; set; }
         public Species? Species { get; set; }
         public ListingCategory? Category { get; set; }
         public int PageIndex { get; set; }
