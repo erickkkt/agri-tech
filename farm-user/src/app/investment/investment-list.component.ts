@@ -51,7 +51,7 @@ export class InvestmentListComponent implements OnInit {
 
   openInvestModal(offer: InvestmentOffer) {
     if (!this.authService.hasValidToken()) {
-      this.authService.login();
+      this.authService.redirectToLogin(this.router.url);
       return;
     }
     this.selectedOffer = offer;

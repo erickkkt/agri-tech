@@ -11,7 +11,7 @@
     </nav>
     <div class="auth">
       <ng-container *ngIf="isAuthenticated$ | async; else loginBtn">
-        <span class="user-name">{{ (userInfo$ | async)?.['name'] || 'Tài khoản' }}</span>
+        <span class="user-name">{{ (currentUser$ | async)?.displayName || 'Tài khoản' }}</span>
         <button class="secondary" (click)="logout()">Đăng xuất</button>
       </ng-container>
       <ng-template #loginBtn>

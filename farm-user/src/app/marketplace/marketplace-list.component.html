@@ -70,7 +70,9 @@
 
   <!-- Listings grid -->
   <div class="listing-grid" *ngIf="!loading && listings.length > 0">
-    <article class="card hoverable listing" *ngFor="let l of listings">
+    <article class="card hoverable listing" *ngFor="let l of listings"
+             [routerLink]="['/marketplace', l.id]"
+             tabindex="0">
       <div class="listing-image">
         <img *ngIf="l.photoUrls?.length; else placeholderImg" [src]="l.photoUrls[0]" [alt]="l.title" />
         <ng-template #placeholderImg>
@@ -97,7 +99,7 @@
           </div>
           <div class="quantity-pill">Còn {{ l.quantity }}</div>
         </div>
-        <button class="secondary listing-cta">Xem chi tiết →</button>
+        <button class="secondary listing-cta" type="button">Xem chi tiết →</button>
       </div>
     </article>
   </div>

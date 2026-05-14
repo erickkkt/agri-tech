@@ -1,0 +1,88 @@
+<div class="auth-wrap">
+  <div class="auth-card card">
+    <div class="brand">
+      <span class="emoji">🌾</span>
+      <h1>Agri-Tech</h1>
+      <p class="sub">Hệ sinh thái nông nghiệp số</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs" role="tablist">
+      <button class="tab" [class.active]="tab === 'login'" (click)="setTab('login')" role="tab" type="button">
+        Đăng nhập
+      </button>
+      <button class="tab" [class.active]="tab === 'register'" (click)="setTab('register')" role="tab" type="button">
+        Đăng ký
+      </button>
+    </div>
+
+    <!-- Social buttons -->
+    <div class="social">
+      <button type="button" class="social-btn" (click)="socialLogin('google')">
+        <span class="icon">🇬</span>
+        <span>Tiếp tục với Google</span>
+      </button>
+      <button type="button" class="social-btn" (click)="socialLogin('facebook')">
+        <span class="icon">📘</span>
+        <span>Tiếp tục với Facebook</span>
+      </button>
+    </div>
+
+    <div class="divider"><span>hoặc</span></div>
+
+    <!-- Error -->
+    <div class="alert" *ngIf="error">{{ error }}</div>
+
+    <!-- LOGIN form -->
+    <form *ngIf="tab === 'login'" (ngSubmit)="submitLogin()" #lf="ngForm" novalidate>
+      <div class="field">
+        <label for="li-email">Email</label>
+        <input id="li-email" type="email" name="email"
+               [(ngModel)]="loginEmail" required autocomplete="email" />
+      </div>
+      <div class="field">
+        <label for="li-pwd">Mật khẩu</label>
+        <input id="li-pwd" type="password" name="password"
+               [(ngModel)]="loginPassword" required autocomplete="current-password" />
+      </div>
+      <button type="submit" class="primary block" [disabled]="submitting">
+        {{ submitting ? 'Đang xử lý…' : 'Đăng nhập' }}
+      </button>
+      <p class="hint">
+        Chưa có tài khoản?
+        <a (click)="setTab('register')">Đăng ký miễn phí</a>
+      </p>
+    </form>
+
+    <!-- REGISTER form -->
+    <form *ngIf="tab === 'register'" (ngSubmit)="submitRegister()" #rf="ngForm" novalidate>
+      <div class="field">
+        <label for="rg-name">Tên hiển thị</label>
+        <input id="rg-name" type="text" name="displayName"
+               [(ngModel)]="regDisplayName" autocomplete="name" />
+      </div>
+      <div class="field">
+        <label for="rg-email">Email</label>
+        <input id="rg-email" type="email" name="email"
+               [(ngModel)]="regEmail" required autocomplete="email" />
+      </div>
+      <div class="field">
+        <label for="rg-pwd">Mật khẩu</label>
+        <input id="rg-pwd" type="password" name="password"
+               [(ngModel)]="regPassword" required minlength="6" autocomplete="new-password" />
+      </div>
+      <div class="field">
+        <label for="rg-conf">Xác nhận mật khẩu</label>
+        <input id="rg-conf" type="password" name="confirm"
+               [(ngModel)]="regConfirm" required autocomplete="new-password" />
+      </div>
+      <button type="submit" class="primary block" [disabled]="submitting">
+        {{ submitting ? 'Đang xử lý…' : 'Tạo tài khoản' }}
+      </button>
+      <p class="hint">
+        Đã có tài khoản?
+        <a (click)="setTab('login')">Đăng nhập</a>
+      </p>
+    </form>
+  </div>
+</div>

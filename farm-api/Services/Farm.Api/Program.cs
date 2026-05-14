@@ -1,4 +1,5 @@
 
+using System.Text;
 using Farm.Api.Extensions;
 using Farm.Api.Hubs;
 using Farm.Api.Middleware;
@@ -7,7 +8,9 @@ using Farm.Domain.FarmDbContexts;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -53,6 +56,36 @@ void ConfigureServices(ConfigurationManager configuration, IWebHostEnvironment e
     {
         options.Authority = configuration.GetValue<string>("IdentityServerAuthentication:Authority");
         options.Audience = configuration.GetValue<string>("IdentityServerAuthentication:ClientId");
+    })
+    // Phase 4: local end-user JWT (issued by /api/v1/auth/login & /auth/register).
+    // Symmetric HS256 signing; same Issuer/Audience/SigningKey used by JwtTokenService.
+    .AddJwtBearer("Local", options =>
+    {
+        var signingKey = configuration.GetValue<string>("Jwt:SigningKey");
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = configuration.GetValue<string>("Jwt:Issuer") ?? "agri-tech-api",
+            ValidateAudience = true,
+            ValidAudience = configuration.GetValue<string>("Jwt:Audience") ?? "agri-tech-webuser",
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = !string.IsNullOrWhiteSpace(signingKey)
+                ? new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey))
+                : null,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.FromMinutes(2)
+        };
+    });
+
+    // Default [Authorize] policy accepts EITHER the Azure AD schemes OR the local end-user
+    // JWT — so existing admin controllers and new end-user-facing controllers can share
+    // [Authorize] without each having to declare AuthenticationSchemes explicitly.
+    builder.Services.AddAuthorization(options =>
+    {
+        options.DefaultPolicy = new AuthorizationPolicyBuilder(
+                JwtBearerDefaults.AuthenticationScheme, "AzureAD", "AzureAD_B2C", "Local")
+            .RequireAuthenticatedUser()
+            .Build();
     });
 
 

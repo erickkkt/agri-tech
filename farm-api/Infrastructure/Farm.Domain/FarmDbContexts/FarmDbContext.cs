@@ -140,6 +140,13 @@ namespace Farm.Domain.FarmDbContexts
             modelBuilder.Entity<Audit>()
                 .HasIndex(a => new { a.EntityName, a.PrimaryKeyValue });
 
+            // End-user auth: prevent duplicate email registration.
+            // Index name kept explicit so the migration is easy to read.
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.EmailAddress)
+                .IsUnique()
+                .HasDatabaseName("IX_User_EmailAddress_Unique");
+
             // Phase 1 indexes
             modelBuilder.Entity<Vaccine>()
                 .HasIndex(v => v.Name).IsUnique();

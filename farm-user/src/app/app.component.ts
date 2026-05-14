@@ -1,8 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
-import { UserInfo } from 'angular-oauth2-oidc';
 
-import { AuthService } from './services/auth.service';
+import { AuthService, AuthUser } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -10,26 +9,22 @@ import { AuthService } from './services/auth.service';
   styleUrls: ['./app.component.css'],
   standalone: false
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   title = 'Agri-Tech Farm User';
 
   isAuthenticated$: Observable<boolean>;
-  userInfo$: Observable<UserInfo | null>;
+  currentUser$: Observable<AuthUser | null>;
 
   constructor(private readonly authService: AuthService) {
     this.isAuthenticated$ = this.authService.isAuthenticated$;
-    this.userInfo$ = this.authService.userInfo$;
-  }
-
-  async ngOnInit(): Promise<void> {
-    await this.authService.runInitialLoginSequence();
+    this.currentUser$ = this.authService.currentUser$;
   }
 
   login(): void {
-    this.authService.login();
+    this.authService.redirectToLogin();
   }
 
   logout(): void {
-    this.authService.logout();
+    this.authService.logout('/');
   }
 }

@@ -1,126 +1,144 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { AuthConfig, NullValidationHandler, OAuthService, UserInfo } from 'angular-oauth2-oidc';
-import { BehaviorSubject, ReplaySubject } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { BehaviorSubject, firstValueFrom } from 'rxjs';
 
-import { HttpBaseService } from '../shared/services/http-base.service';
-import { ApiEndPoints } from '../shared/config/api-end-points';
 import { ConfigurationService } from './configuration.service';
 
 /**
- * End-user auth. Same Azure AD B2C / implicit flow shape as farm-admin so a user
- * can be logged in across both apps if they share a tenant. Browsing the
- * marketplace + forum + investment listings does NOT require auth; auth is
- * only enforced when placing an order / posting / etc. (see AuthGuardService).
+ * End-user auth backed by /api/v1/auth/{login,register} on Farm.Api.
+ *
+ * - JWT is stored in localStorage so login survives a browser restart.
+ * - `isAuthenticated$` and `currentUser$` are reactive — the header / guards
+ *   subscribe to them instead of polling.
+ * - The HTTP interceptor (AuthInterceptor) reads the token via `accessToken`
+ *   and attaches `Authorization: Bearer <token>` to API calls.
  */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-  private isAuthenticatedSubject$ = new BehaviorSubject<boolean>(false);
-  public isAuthenticated$ = this.isAuthenticatedSubject$.asObservable();
+  private static readonly TOKEN_KEY = 'agritech.userToken';
+  private static readonly USER_KEY = 'agritech.user';
 
-  private isDoneLoadingSubject$ = new ReplaySubject<boolean>(1);
-  public isDoneLoading$ = this.isDoneLoadingSubject$.asObservable();
+  private readonly _isAuthenticated$ = new BehaviorSubject<boolean>(false);
+  private readonly _currentUser$ = new BehaviorSubject<AuthUser | null>(null);
 
-  private loadedUserInfoSubject$ = new BehaviorSubject<boolean>(false);
-  public loadedUserInfo$ = this.loadedUserInfoSubject$.asObservable();
-
-  public userInfo$ = new BehaviorSubject<UserInfo | null>(null);
+  /** Emits true while a valid token is held. */
+  readonly isAuthenticated$ = this._isAuthenticated$.asObservable();
+  /** Emits the current user payload (id, email, displayName) or null. */
+  readonly currentUser$ = this._currentUser$.asObservable();
 
   constructor(
-    private readonly http: HttpBaseService,
-    private readonly api: ApiEndPoints,
-    private readonly configurationService: ConfigurationService,
-    private readonly oauthService: OAuthService,
-    private readonly router: Router
+    private readonly http: HttpClient,
+    private readonly router: Router,
+    private readonly config: ConfigurationService
   ) {
-    // Track token validity from the oauth event stream
-    this.oauthService.events.subscribe(_ => {
-      this.isAuthenticatedSubject$.next(this.oauthService.hasValidAccessToken());
-    });
+    this.restoreFromStorage();
+  }
 
-    this.oauthService.events
-      .pipe(filter(e => ['session_terminated', 'session_error'].includes(e.type)))
-      .subscribe(_ => this.navigateToLoginPage());
+  // -------- Public API --------
 
-    // We can't configure OAuth until ConfigurationService has loaded config.json,
-    // which happens in APP_INITIALIZER before this service is constructed. So
-    // by the time we get here, identityServerAddress is already populated.
-    const authConfig: AuthConfig = {
-      issuer: this.configurationService.identityServerAddress || undefined,
-      redirectUri: window.location.origin,
-      postLogoutRedirectUri: window.location.origin,
-      silentRefreshRedirectUri: window.location.origin + '/assets/silent-refresh.html',
-      responseType: 'token id_token',
-      scope: 'openid profile',
-      timeoutFactor: 0.8,
-      requestAccessToken: true,
-      skipIssuerCheck: true,
-      clearHashAfterLogin: true,
-      oidc: true,
-      strictDiscoveryDocumentValidation: false
-    };
+  get accessToken(): string | null {
+    return localStorage.getItem(AuthService.TOKEN_KEY);
+  }
 
-    this.oauthService.configure(authConfig);
-    this.oauthService.tokenValidationHandler = new NullValidationHandler();
+  hasValidToken(): boolean {
+    const token = this.accessToken;
+    if (!token) return false;
+    const exp = this.tokenExpiryEpochSec(token);
+    if (!exp) return false;
+    return Date.now() / 1000 < exp - 30; // 30s safety margin
+  }
+
+  async login(email: string, password: string): Promise<void> {
+    const res = await firstValueFrom(this.http.post<AuthResponse>(
+      `${this.apiBase}/auth/login`, { email, password }
+    ));
+    this.applyAuthResponse(res);
+  }
+
+  async register(payload: RegisterPayload): Promise<void> {
+    const res = await firstValueFrom(this.http.post<AuthResponse>(
+      `${this.apiBase}/auth/register`, payload
+    ));
+    this.applyAuthResponse(res);
+  }
+
+  logout(redirectTo: string = '/'): void {
+    localStorage.removeItem(AuthService.TOKEN_KEY);
+    localStorage.removeItem(AuthService.USER_KEY);
+    this._isAuthenticated$.next(false);
+    this._currentUser$.next(null);
+    this.router.navigateByUrl(redirectTo);
   }
 
   /**
-   * Run once on app bootstrap. Loads the OIDC discovery doc, tries implicit
-   * login (parsing any token in the URL hash), and pulls user profile.
+   * Called by the auth guard when an unauthenticated user hits a protected route.
+   * Sends them to /login with the original URL preserved so we can bounce back.
    */
-  public async runInitialLoginSequence(): Promise<void> {
-    if (!this.configurationService.identityServerAddress) {
-      // No identity URL configured -- treat as anonymous app, mark loading done.
-      this.isDoneLoadingSubject$.next(true);
+  redirectToLogin(returnUrl?: string): void {
+    this.router.navigate(['/login'], { queryParams: returnUrl ? { returnUrl } : undefined });
+  }
+
+  // -------- Internals --------
+
+  private get apiBase(): string {
+    return `${this.config.apiBaseUrl}/api/v1`;
+  }
+
+  private applyAuthResponse(res: AuthResponse): void {
+    localStorage.setItem(AuthService.TOKEN_KEY, res.accessToken);
+    localStorage.setItem(AuthService.USER_KEY, JSON.stringify(res.user));
+    this._isAuthenticated$.next(true);
+    this._currentUser$.next(res.user);
+  }
+
+  private restoreFromStorage(): void {
+    if (!this.hasValidToken()) {
+      // Expired or missing — clean up silently.
+      localStorage.removeItem(AuthService.TOKEN_KEY);
+      localStorage.removeItem(AuthService.USER_KEY);
       return;
     }
+    const userJson = localStorage.getItem(AuthService.USER_KEY);
+    if (userJson) {
+      try {
+        this._currentUser$.next(JSON.parse(userJson));
+      } catch { /* corrupted — ignore */ }
+    }
+    this._isAuthenticated$.next(true);
+  }
 
+  private tokenExpiryEpochSec(token: string): number | null {
+    // JWT: header.payload.signature — payload is base64url JSON with `exp` claim.
     try {
-      await this.oauthService.loadDiscoveryDocument(
-        this.configurationService.identityServerAddress + '/.well-known/openid-configuration'
-      );
-      await this.oauthService.tryLoginImplicitFlow();
-      if (this.oauthService.hasValidAccessToken()) {
-        this.getUserProfile();
-      }
-    } catch (e) {
-      console.error('OIDC initial login failed', e);
-    } finally {
-      this.isDoneLoadingSubject$.next(true);
+      const payload = token.split('.')[1];
+      const json = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+      const parsed = JSON.parse(json);
+      return typeof parsed.exp === 'number' ? parsed.exp : null;
+    } catch {
+      return null;
     }
   }
+}
 
-  public login(targetUrl?: string): void {
-    this.oauthService.initImplicitFlow(encodeURIComponent(targetUrl || this.router.url));
-  }
+// -------- DTOs --------
 
-  public logout(): void {
-    this.oauthService.logOut();
-  }
+export interface AuthUser {
+  id: string;
+  email: string;
+  displayName: string;
+}
 
-  public refresh(): void {
-    this.oauthService.silentRefresh().catch(err => console.error('silentRefresh failed', err));
-  }
+export interface AuthResponse {
+  accessToken: string;
+  expiresAt: string; // ISO
+  user: AuthUser;
+}
 
-  public hasValidToken(): boolean {
-    return this.oauthService.hasValidAccessToken();
-  }
-
-  public get accessToken(): string { return this.oauthService.getAccessToken(); }
-  public get identityClaims(): object | null { return this.oauthService.getIdentityClaims(); }
-  public get idToken(): string { return this.oauthService.getIdToken(); }
-
-  private navigateToLoginPage(): void {
-    // For end-user app, just send them back home rather than a dedicated should-login page.
-    this.router.navigateByUrl('/');
-  }
-
-  private getUserProfile(): void {
-    this.http.getDataAsync<UserInfo>(this.api.getUserInfo())
-      .then(user => this.userInfo$.next(user ?? null))
-      .catch(err => console.error('Failed to load user profile', err))
-      .finally(() => this.loadedUserInfoSubject$.next(true));
-  }
+export interface RegisterPayload {
+  email: string;
+  password: string;
+  displayName?: string;
+  phoneNumber?: string;
 }

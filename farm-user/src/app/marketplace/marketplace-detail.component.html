@@ -1,0 +1,85 @@
+<div class="container detail-wrap">
+
+  <button class="back-link" (click)="backToList()">← Quay lại sàn giao dịch</button>
+
+  <!-- Loading -->
+  <div class="card skeleton-card" *ngIf="loading">
+    <div class="skeleton" style="height: 280px;"></div>
+    <div style="padding: 20px;">
+      <div class="skeleton" style="height: 28px; width: 60%; margin-bottom: 12px;"></div>
+      <div class="skeleton" style="height: 16px; width: 90%; margin-bottom: 8px;"></div>
+      <div class="skeleton" style="height: 16px; width: 70%;"></div>
+    </div>
+  </div>
+
+  <!-- Not found -->
+  <div class="empty-state card" *ngIf="!loading && notFound">
+    <div class="emoji">😕</div>
+    <h3>Không tìm thấy tin đăng</h3>
+    <p>Tin đăng có thể đã bị gỡ hoặc đường dẫn không đúng.</p>
+    <button class="secondary" (click)="backToList()">Về danh sách</button>
+  </div>
+
+  <!-- Detail -->
+  <div class="detail-grid" *ngIf="!loading && listing">
+
+    <!-- LEFT: gallery + description -->
+    <div class="left">
+
+      <div class="card gallery">
+        <div class="hero">
+          <img *ngIf="listing.photoUrls?.length; else placeholderImg"
+               [src]="listing.photoUrls[activePhoto]" [alt]="listing.title" />
+          <ng-template #placeholderImg>
+            <div class="placeholder">{{ emojiOf() }}</div>
+          </ng-template>
+        </div>
+        <div class="thumbs" *ngIf="(listing.photoUrls?.length ?? 0) > 1">
+          <button *ngFor="let url of listing.photoUrls; let i = index"
+                  type="button"
+                  class="thumb"
+                  [class.active]="i === activePhoto"
+                  (click)="activePhoto = i">
+            <img [src]="url" alt="" />
+          </button>
+        </div>
+      </div>
+
+      <div class="card description">
+        <h3>Mô tả</h3>
+        <p>{{ listing.description || 'Không có mô tả chi tiết.' }}</p>
+      </div>
+    </div>
+
+    <!-- RIGHT: info + action -->
+    <aside class="right">
+      <div class="card info">
+        <div class="badges">
+          <span class="badge success">{{ categoryLabel[listing.category] || 'Khác' }}</span>
+          <span class="badge subtle">{{ emojiOf() }} {{ speciesOf() }}</span>
+        </div>
+        <h1 class="title">{{ listing.title }}</h1>
+
+        <div class="meta">
+          <div>🏡 <strong>{{ listing.farmName }}</strong></div>
+          <div>📍 {{ listing.province || 'Đang cập nhật' }}</div>
+        </div>
+
+        <div class="price-box">
+          <div class="price">
+            <span class="amount">{{ listing.price | number }}</span>
+            <span class="unit">{{ listing.currency }} / {{ listing.unit }}</span>
+          </div>
+          <div class="qty">Còn {{ listing.quantity }} {{ listing.unit }}</div>
+        </div>
+
+        <button class="primary block" (click)="contactSeller()">📞 Liên hệ người bán</button>
+        <button class="secondary block">💬 Nhắn tin</button>
+
+        <p class="trust">
+          Giao dịch trực tiếp với trang trại. Hệ thống xác minh sẽ ra mắt trong Phase tiếp theo.
+        </p>
+      </div>
+    </aside>
+  </div>
+</div>

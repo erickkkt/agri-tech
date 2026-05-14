@@ -3,8 +3,10 @@ using Farm.Api.Services;
 using Farm.Business.Jobs;
 using Farm.Business.Services;
 using Farm.Business.Services.Interfaces;
+using Farm.Domain.Entities;
 using Farm.Domain.Repositories;
 using Farm.Domain.Repositories.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Farm.Api.Extensions
@@ -75,6 +77,10 @@ namespace Farm.Api.Extensions
             // Storage + Realtime
             services.AddScoped<IMediaStorageService, LocalFileStorageService>();
             services.AddScoped<INotificationPublisher, SignalRNotificationPublisher>();
+
+            // Phase 4 - End-user auth (local JWT)
+            services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
+            services.AddScoped<ITokenService, JwtTokenService>();
         }
 
         public static void AddSecurityHeaders(this IApplicationBuilder app)

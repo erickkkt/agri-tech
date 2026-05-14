@@ -119,14 +119,17 @@ namespace Farm.Business.Services
             }
             else
             {
+                // End-user accounts (registered via /auth/register) can have a null RoleId —
+                // they are not part of the admin RBAC system. Fall back to empty Guid + ""
+                // rather than crashing on .Value.
                 userInfo = new UserDto()
                 {
                     Id = user.Id,
                     UserName = user.UserName,
                     EmailAddress = user.EmailAddress,
                     PhoneNumber = user.PhoneNumber,
-                    RoleId = user.RoleId.Value,
-                    Role = user.Role.Name
+                    RoleId = user.RoleId ?? Guid.Empty,
+                    Role = user.Role?.Name ?? string.Empty
                 };
             }
 

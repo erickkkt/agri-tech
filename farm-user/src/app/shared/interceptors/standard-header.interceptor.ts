@@ -4,14 +4,19 @@ import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
+import { AuthService } from '../../services/auth.service';
+
 /**
  * Ensures Content-Type / Accept are set, and centralises HTTP error handling.
- * Mirrors farm-admin/StandardHeaderInterceptor but without the MatDialog dependency.
+ * 401 → wipe local token + bounce to /login (with returnUrl). 5xx → log.
  */
 @Injectable()
 export class StandardHeaderInterceptor implements HttpInterceptor {
 
-  constructor(private readonly router: Router) { }
+  constructor(
+    private readonly router: Router,
+    private readonly auth: AuthService
+  ) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     let modified = req;
@@ -27,10 +32,14 @@ export class StandardHeaderInterceptor implements HttpInterceptor {
   }
 
   private handleError(err: HttpErrorResponse): Observable<never> {
-    if (err.status === 401 || err.status === 403) {
-      // angular-oauth2-oidc will already have triggered a re-login if the token is bad;
-      // for explicit anonymous calls, just bounce back to home.
-      this.router.navigateByUrl('/');
+    if (err.status === 401) {
+      // Token expired / invalid — purge local state and redirect to login.
+      // Skip auto-redirect when the failing call IS /auth/login: that means wrong
+      // credentials, the login form will show the error itself.
+      const url = err.url ?? '';
+      if (!url.includes('/auth/login') && !url.includes('/auth/register')) {
+        this.auth.logout(this.router.url.startsWith('/login') ? '/' : '/login');
+      }
     } else if (err.status >= 500) {
       console.error('Server error:', err);
     }

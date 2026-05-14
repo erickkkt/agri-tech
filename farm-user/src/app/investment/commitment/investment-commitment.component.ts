@@ -29,7 +29,7 @@ export class InvestmentCommitmentComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     if (!this.authService.hasValidToken()) {
-      this.authService.login(this.router.url);
+      this.authService.redirectToLogin(this.router.url);
       return;
     }
     const orderId = this.route.snapshot.paramMap.get('id');
