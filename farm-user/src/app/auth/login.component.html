@@ -33,16 +33,21 @@
     <!-- Error -->
     <div class="alert" *ngIf="error">{{ error }}</div>
 
-    <!-- LOGIN form -->
+    <!-- LOGIN form
+         NOTE: `name` attributes must be UNIQUE across both forms in this component.
+         Angular's template-driven NgForm tracks controls by name; reusing the same
+         names in two sibling <form>s (toggled by *ngIf) can leave a stale control
+         registration that swallows ngModel updates → the input looks filled but the
+         component property stays empty, triggering "Email và mật khẩu là bắt buộc." -->
     <form *ngIf="tab === 'login'" (ngSubmit)="submitLogin()" #lf="ngForm" novalidate>
       <div class="field">
         <label for="li-email">Email</label>
-        <input id="li-email" type="email" name="email"
+        <input id="li-email" type="email" name="loginEmail"
                [(ngModel)]="loginEmail" required autocomplete="email" />
       </div>
       <div class="field">
         <label for="li-pwd">Mật khẩu</label>
-        <input id="li-pwd" type="password" name="password"
+        <input id="li-pwd" type="password" name="loginPassword"
                [(ngModel)]="loginPassword" required autocomplete="current-password" />
       </div>
       <button type="submit" class="primary block" [disabled]="submitting">
@@ -58,22 +63,22 @@
     <form *ngIf="tab === 'register'" (ngSubmit)="submitRegister()" #rf="ngForm" novalidate>
       <div class="field">
         <label for="rg-name">Tên hiển thị</label>
-        <input id="rg-name" type="text" name="displayName"
+        <input id="rg-name" type="text" name="regDisplayName"
                [(ngModel)]="regDisplayName" autocomplete="name" />
       </div>
       <div class="field">
         <label for="rg-email">Email</label>
-        <input id="rg-email" type="email" name="email"
+        <input id="rg-email" type="email" name="regEmail"
                [(ngModel)]="regEmail" required autocomplete="email" />
       </div>
       <div class="field">
         <label for="rg-pwd">Mật khẩu</label>
-        <input id="rg-pwd" type="password" name="password"
+        <input id="rg-pwd" type="password" name="regPassword"
                [(ngModel)]="regPassword" required minlength="6" autocomplete="new-password" />
       </div>
       <div class="field">
         <label for="rg-conf">Xác nhận mật khẩu</label>
-        <input id="rg-conf" type="password" name="confirm"
+        <input id="rg-conf" type="password" name="regConfirm"
                [(ngModel)]="regConfirm" required autocomplete="new-password" />
       </div>
       <button type="submit" class="primary block" [disabled]="submitting">
