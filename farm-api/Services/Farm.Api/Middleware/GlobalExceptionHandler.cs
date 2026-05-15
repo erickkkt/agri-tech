@@ -26,13 +26,25 @@ namespace Farm.Api.Middleware
             catch (Exception ex)
             {
                 var requestString = GetRequestData(context);
+                var errorId = Guid.NewGuid();
+
+                // CRITICAL: actually log the exception. The previous version captured it
+                // and threw it away, which made every 500 silent — you saw the status code
+                // but had no idea what blew up. Now correlation id ties the response back
+                // to the log line.
+                _logger.LogError(ex,
+                    "Unhandled exception in pipeline. ErrorId={ErrorId} Path={Path} Method={Method}",
+                    errorId, context.Request.Path, context.Request.Method);
 
                 var error = new
                 {
-                    Id = Guid.NewGuid(),
+                    Id = errorId,
                     Status = (short)HttpStatusCode.InternalServerError,
                     Title = "Some kind of error occurred in the API.  Please use the id and contact our support team if the problem persists.",
                     RequestString = _env.IsDevelopment() ? requestString.ToString() : string.Empty,
+                    // Surface the exception in dev so the client / browser console shows the
+                    // real cause without forcing devs to grep server logs. NEVER in prod.
+                    Detail = _env.IsDevelopment() ? ex.ToString() : null,
                 };
 
                 await HandleExceptionAsync(context, ex, error);
